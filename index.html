@@ -1,0 +1,1766 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduAPS - Platform Belajar, Tryout, Forum & Aplikasi Pembuat UML</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .tab-active {
+            background: linear-gradient(135deg, #7c3aed, #4f46e5);
+            color: white !important;
+            box-shadow: 0 8px 20px -4px rgba(124, 58, 237, 0.45);
+        }
+        .sub-btn-active {
+            background-color: #facc15 !important;
+            color: #0f172a !important;
+            border-color: #eab308 !important;
+            font-weight: 800;
+            box-shadow: 0 6px 15px -3px rgba(234, 179, 8, 0.35);
+        }
+        .svg-canvas-grid {
+            background-color: #f8fafc;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        .uml-node {
+            cursor: grab;
+            transition: filter 0.15s ease;
+        }
+        .uml-node:active {
+            cursor: grabbing;
+        }
+        .uml-node-selected {
+            filter: drop-shadow(0 0 6px rgba(124, 58, 237, 0.75));
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- ========================================================================= -->
+    <!-- TOP NAVBAR (4 USE CASE UTAMA EDU APS)                                     -->
+    <!-- ========================================================================= -->
+    <header class="bg-white/95 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap justify-between items-center gap-4">
+            <!-- Brand Identity -->
+            <div class="flex items-center space-x-3">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-purple-600 via-indigo-500 to-amber-400 flex items-center justify-center text-white font-extrabold text-xl shadow-md">
+                    EA
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-purple-700 to-indigo-600">edu Aps</span>
+                        <span id="backend-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200">System Ready</span>
+                    </div>
+                    <span class="block text-xs text-slate-500 font-medium">Analisis &amp; Perancangan Sistem Informasi</span>
+                </div>
+            </div>
+
+            <!-- 4 Main Navigation Tabs Sesuai Use Case Diagram -->
+            <nav class="flex flex-wrap gap-1.5 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
+                <button onclick="switchMainTab('belajar')" id="nav-belajar" class="tab-active px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 flex items-center gap-1.5">
+                    <span>📚</span> <span>Ruang Belajar</span>
+                </button>
+                <button onclick="switchMainTab('tryout')" id="nav-tryout" class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:bg-white transition-all duration-200 flex items-center gap-1.5">
+                    <span>📝</span> <span>Ruang Tryout</span>
+                </button>
+                <button onclick="switchMainTab('forum')" id="nav-forum" class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:bg-white transition-all duration-200 flex items-center gap-1.5">
+                    <span>💬</span> <span>Forum Tanya Jawab</span>
+                </button>
+                <button onclick="switchMainTab('uml')" id="nav-uml" class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:bg-white transition-all duration-200 flex items-center gap-1.5">
+                    <span>📐</span> <span>Aplikasi Pembuat UML</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ========================================================================= -->
+    <!-- MAIN CONTENT CONTAINER                                                    -->
+    <!-- ========================================================================= -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-7 flex-grow w-full space-y-6">
+
+        <!-- ===================================================================== -->
+        <!-- TAB 1: RUANG BELAJAR (Materi 1 - Materi 6)                            -->
+        <!-- Sequence Diagram: Mengakses Ruang Belajar (Accessing Learning Room)   -->
+        <!-- ===================================================================== -->
+        <section id="section-belajar" class="space-y-6">
+            <!-- Header Banner & Sequence Indicator -->
+            <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 rounded-2xl p-6 text-white shadow-lg flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                <div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="bg-amber-400 text-slate-900 text-[11px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Use Case: Ruang Belajar</span>
+                        <span class="bg-white/20 text-white text-[11px] font-semibold px-3 py-1 rounded-full">Spesialisasi: Materi 1 s/d Materi 6</span>
+                    </div>
+                    <h1 class="text-2xl md:text-3xl font-extrabold mt-2">Ruang Belajar Mahasiswa</h1>
+                    <p class="text-indigo-100 text-xs sm:text-sm mt-1">Pilih daftar materi pertemuan untuk memuat detail bahan kajian Analisis &amp; Perancangan Sistem dari Database.</p>
+                </div>
+
+                <!-- Live Sequence Log Box -->
+                <div class="bg-slate-900/40 backdrop-blur-sm border border-white/20 rounded-xl p-3.5 text-xs min-w-[280px]">
+                    <div class="text-amber-300 font-bold uppercase tracking-wider text-[10px] mb-1">🔄 Alur Sequence: Mengakses Ruang Belajar</div>
+                    <div id="belajar-seq-log" class="font-mono text-[11px] text-indigo-100 space-y-0.5">
+                        <div>1. Pilih Ruang Belajar() &rarr; :Interface</div>
+                        <div>1.2 Get Materi &amp; Ruang Belajar() &rarr; :Database</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pemilih Materi 1 - 6 (1.4 Tampilkan Daftar Materi()) -->
+            <div>
+                <div class="flex items-center justify-between mb-3">
+                    <h2 class="text-sm font-extrabold text-slate-700 uppercase tracking-wider">1.4 Daftar Materi Pembelajaran (Materi 1 – 6)</h2>
+                    <span class="text-xs text-slate-500">Klik materi untuk menjalankan <code class="text-purple-600 font-bold">2.1 Request Detail Materi(materiId)</code></span>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3" id="belajar-selector">
+                    <!-- Di-render via JS -->
+                </div>
+            </div>
+
+            <!-- Konten Detail Materi (2.4 Tampilkan Konten Materi()) -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                <div class="lg:col-span-8 bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200">
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4 mb-5">
+                        <div>
+                            <span id="belajar-badge" class="text-xs font-extrabold text-purple-700 bg-purple-100 px-3 py-1 rounded-full">Materi 1 &bull; Pertemuan 1</span>
+                            <h2 id="belajar-title" class="text-xl md:text-2xl font-extrabold text-slate-800 mt-2">Judul Materi</h2>
+                        </div>
+                        <span class="text-3xl">📖</span>
+                    </div>
+
+                    <div id="belajar-ringkasan" class="bg-slate-50 border-l-4 border-purple-500 p-3.5 rounded-r-xl text-xs text-slate-600 font-medium mb-5">
+                        Ringkasan materi...
+                    </div>
+
+                    <div id="belajar-content" class="space-y-4 text-slate-700 leading-relaxed text-sm md:text-base">
+                        <!-- Konten detail materi -->
+                    </div>
+
+                    <div class="mt-8 pt-5 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
+                        <div class="text-xs text-slate-500">
+                            Sudah selesai mempelajari <strong id="belajar-footer-kode" class="text-slate-700">Materi 1</strong>? Uji pemahamanmu di Ruang Tryout!
+                        </div>
+                        <button onclick="lanjutKeTryoutDariBelajar()" class="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-500 text-slate-900 font-extrabold text-xs sm:text-sm shadow-sm transition transform hover:-translate-y-0.5 flex items-center gap-2">
+                            <span>🎯 Kerjakan Tryout Materi Ini</span>
+                            <span>&rarr;</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Panel Samping: Skema Sequence Ruang Belajar & Navigasi Cepat -->
+                <div class="lg:col-span-4 space-y-4">
+                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
+                        <span class="text-[11px] font-extrabold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md">Arsitektur Sistem</span>
+                        <h3 class="text-base font-extrabold text-slate-800 mt-2">Lifeline Ruang Belajar</h3>
+                        <p class="text-xs text-slate-500 mt-1 mb-4">Interaksi objek sesuai Sequence Diagram <em>Mengakses Ruang Belajar</em>:</p>
+                        <ol class="space-y-2.5 text-xs text-slate-600">
+                            <li class="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                                <span class="w-5 h-5 rounded-full bg-purple-600 text-white font-bold flex items-center justify-center text-[10px] shrink-0">1</span>
+                                <div><strong>User &rarr; :Interface:</strong> Memilih menu <code class="text-purple-700">Pilih Ruang Belajar()</code></div>
+                            </li>
+                            <li class="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                                <span class="w-5 h-5 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center text-[10px] shrink-0">1.2</span>
+                                <div><strong>:System Control &rarr; :Database:</strong> Memanggil <code class="text-indigo-700">Get Materi &amp; Ruang Belajar()</code> dan menampilkan daftar Materi 1–6.</div>
+                            </li>
+                            <li class="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                                <span class="w-5 h-5 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-[10px] shrink-0">2.2</span>
+                                <div><strong>Pilih Materi(materiId):</strong> Mengambil <code class="text-blue-700">Get Detail Materi(materiId)</code> dari Database dan merender <code class="text-blue-700">Tampilkan Konten Materi()</code>.</div>
+                            </li>
+                        </ol>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-5 border border-amber-200 space-y-3">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl">🎓</span>
+                            <h4 class="font-extrabold text-slate-800 text-sm">Siap Evaluasi Akhir?</h4>
+                        </div>
+                        <p class="text-xs text-slate-600">Selain tryout per bab (Materi 1–6), tersedia pula <strong>Soal UAS</strong> di Ruang Tryout yang terhubung langsung dengan <strong>&laquo;include&raquo; Hasil Ujian</strong>.</p>
+                        <button onclick="bukaTryoutKategori('Soal UAS')" class="w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 font-bold text-xs transition">
+                            🚀 Buka Simulasi Soal UAS
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- TAB 2: RUANG TRYOUT & HASIL UJIAN (Materi 1 - 6 + Soal UAS)           -->
+        <!-- Sequence Diagram: Taking a Tryout & Viewing Exam Results              -->
+        <!-- ===================================================================== -->
+        <section id="section-tryout" class="hidden space-y-6">
+            <!-- Banner Info Use Case & Sequence -->
+            <div class="bg-gradient-to-r from-purple-700 via-indigo-700 to-slate-900 rounded-2xl p-6 text-white shadow-lg flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                <div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="bg-amber-400 text-slate-900 text-[11px] font-extrabold px-3 py-1 rounded-full uppercase">Use Case: Ruang Tryout</span>
+                        <span class="bg-emerald-400/20 text-emerald-300 border border-emerald-400/30 text-[11px] font-bold px-3 py-1 rounded-full">&laquo;include&raquo; Hasil Ujian</span>
+                    </div>
+                    <h1 class="text-2xl md:text-3xl font-extrabold mt-2">Ruang Tryout &amp; Evaluasi Hasil Ujian</h1>
+                    <p class="text-purple-100 text-xs sm:text-sm mt-1">Pilih kategori Tryout (<strong>Materi 1 – 6</strong> atau <strong>Soal UAS</strong>). Jawaban akan dinilai oleh <em>Grading System</em> dan disimpan ke <em>Database</em>.</p>
+                </div>
+
+                <div class="flex items-center gap-3 bg-white/10 backdrop-blur-sm px-4 py-3 rounded-xl border border-white/15 shrink-0">
+                    <span class="text-3xl">🏆</span>
+                    <div>
+                        <div class="text-[11px] text-purple-200 uppercase font-semibold">Hasil Ujian Terakhir</div>
+                        <div id="header-last-score" class="text-lg font-extrabold text-amber-300">Belum Ujian</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 1. Selects Tryout: Materi 1..6 & Soal UAS -->
+            <div>
+                <div class="flex items-center justify-between mb-3">
+                    <h2 class="text-sm font-extrabold text-slate-700 uppercase tracking-wider">1. Pilih Kategori Tryout (Materi 1 – 6 &amp; Soal UAS)</h2>
+                    <span id="tryout-seq-indicator" class="text-xs font-mono text-purple-700 bg-purple-50 px-2.5 py-1 rounded-lg border border-purple-200">
+                        1. Selects Tryout &rarr; 3. Fetch Questions (Database)
+                    </span>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3" id="tryout-selector">
+                    <!-- Di-render via JS -->
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                <!-- Kolom Kiri: Lembar Soal Tryout (7 Kolom) -->
+                <div class="lg:col-span-7 bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-4 mb-5">
+                        <div>
+                            <span class="text-[11px] font-extrabold bg-amber-400 text-slate-900 px-2.5 py-1 rounded-md uppercase">6. Display the Test</span>
+                            <h3 id="tryout-title" class="text-xl font-extrabold text-slate-800 mt-1.5">Lembar Ujian Tryout</h3>
+                        </div>
+                        <div class="w-full sm:w-auto">
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Nama Peserta Ujian</label>
+                            <input type="text" id="tryout-nama-user" value="Mahasiswa EduAPS" placeholder="Nama Anda" class="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+                    </div>
+
+                    <form id="tryout-form" onsubmit="submitTryoutAnswers(event)" class="space-y-5">
+                        <div id="tryout-questions-container" class="space-y-4">
+                            <!-- Daftar Soal di-render via JS -->
+                        </div>
+
+                        <div class="pt-3 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+                            <span class="text-xs text-slate-500">
+                                Alur: <strong>7. Submit Answers</strong> &rarr; <strong>10. Calculate Score</strong> &rarr; <strong>11. Save Test Results</strong>
+                            </span>
+                            <button type="submit" class="w-full sm:w-auto py-3 px-6 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-sm shadow-md transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                                <span>✅ Submit Jawaban &amp; Lihat Hasil Ujian</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Kolom Kanan: <<include>> Hasil Ujian & Riwayat Database (5 Kolom) -->
+                <div class="lg:col-span-5 space-y-5">
+                    <!-- 15. Display Exam Results (Hasil Ujian) -->
+                    <div id="hasil-ujian-card" class="bg-gradient-to-br from-purple-700 via-indigo-700 to-slate-900 text-white rounded-2xl p-6 shadow-xl border border-purple-400/30">
+                        <div class="flex items-center justify-between border-b border-white/15 pb-3 mb-4">
+                            <div class="flex items-center gap-2.5">
+                                <span class="text-2xl">📊</span>
+                                <div>
+                                    <span class="text-[10px] uppercase tracking-wider bg-emerald-400 text-slate-900 px-2 py-0.5 rounded font-extrabold">&laquo;include&raquo; Hasil Ujian</span>
+                                    <h4 class="font-extrabold text-base mt-0.5">15. Display Exam Results</h4>
+                                </div>
+                            </div>
+                            <button onclick="resetTryoutForm()" class="text-xs bg-white/15 hover:bg-white/25 px-3 py-1.5 rounded-lg font-semibold transition">
+                                Ulangi Ujian
+                            </button>
+                        </div>
+
+                        <div id="hasil-ujian-empty" class="py-6 text-center text-purple-200 text-xs space-y-2">
+                            <div class="text-3xl">📝</div>
+                            <p class="font-bold text-white text-sm">Belum Ada Jawaban yang Disubmit</p>
+                            <p>Kerjakan soal di sebelah kiri lalu klik tombol <strong>Submit Jawaban</strong> untuk menjalankan <em>Grading System</em> dan menampilkan <strong>Hasil Ujian</strong>.</p>
+                        </div>
+
+                        <div id="hasil-ujian-body" class="hidden space-y-4">
+                            <div class="flex items-center justify-between bg-white/10 p-4 rounded-xl border border-white/10">
+                                <div>
+                                    <p id="hasil-kategori-label" class="text-amber-300 text-xs font-extrabold uppercase">Kategori</p>
+                                    <p id="hasil-peserta-label" class="text-xs text-purple-200 mt-0.5">Peserta: Mahasiswa</p>
+                                    <p id="hasil-feedback-label" class="text-sm font-bold mt-2">Evaluasi selesai</p>
+                                    <p id="hasil-detail-label" class="text-xs text-purple-200 mt-0.5">Benar: 0 / 0 soal</p>
+                                </div>
+                                <div class="bg-amber-400 text-slate-900 w-20 h-20 rounded-2xl flex flex-col items-center justify-center shadow-md shrink-0">
+                                    <span class="text-[10px] font-extrabold uppercase">Skor</span>
+                                    <span id="hasil-skor-angka" class="text-3xl font-black">100</span>
+                                </div>
+                            </div>
+
+                            <!-- Pembahasan Singkat -->
+                            <div>
+                                <div class="text-xs font-bold uppercase tracking-wider text-purple-200 mb-2">Rincian Koreksi Grading System:</div>
+                                <div id="hasil-pembahasan-list" class="space-y-2 max-h-60 overflow-y-auto pr-1 text-xs">
+                                    <!-- Diisi via JS -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Riwayat Hasil Ujian di Database (11. Save Test Results) -->
+                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
+                        <div class="flex items-center justify-between mb-3">
+                            <div>
+                                <h4 class="text-sm font-extrabold text-slate-800">🗄️ Riwayat Hasil Ujian (Database)</h4>
+                                <p class="text-[11px] text-slate-500">Data tersimpan melalui step <code class="text-purple-600 font-bold">11. Save Test Results</code></p>
+                            </div>
+                            <button onclick="muatRiwayatHasilUjian()" class="text-xs text-purple-600 font-bold hover:underline">🔄 Refresh</button>
+                        </div>
+                        <div id="riwayat-hasil-container" class="space-y-2 max-h-64 overflow-y-auto text-xs">
+                            <!-- Di-render via JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- TAB 3: FORUM TANYA JAWAB                                              -->
+        <!-- Sequence Diagram: Using a Q&A Forum (Forum Tanya Jawab)               -->
+        <!-- ===================================================================== -->
+        <section id="section-forum" class="hidden space-y-6">
+            <!-- Header Banner -->
+            <div class="bg-gradient-to-r from-purple-600 via-fuchsia-600 to-indigo-600 rounded-2xl p-6 text-white shadow-lg flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                <div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="bg-amber-400 text-slate-900 text-[11px] font-extrabold px-3 py-1 rounded-full uppercase">Use Case: Forum Tanya Jawab</span>
+                        <span class="bg-white/20 text-white text-[11px] font-semibold px-3 py-1 rounded-full">&laquo;extend&raquo; Input Pertanyaan &amp; Jawab Pertanyaan</span>
+                    </div>
+                    <h1 class="text-2xl md:text-3xl font-extrabold mt-2">Forum Diskusi &amp; Tanya Jawab Kelas</h1>
+                    <p class="text-purple-100 text-xs sm:text-sm mt-1">Alur Sequence: <code class="bg-black/20 px-1.5 py-0.5 rounded">openForum() &rarr; getDiscussions() &rarr; fetchQuestionsAndAnswers() &rarr; renderDiscussions()</code></p>
+                </div>
+                <div class="bg-slate-900/35 border border-white/20 rounded-xl px-4 py-3 text-xs font-mono">
+                    <div class="text-amber-300 font-bold text-[10px] uppercase">Status Forum System</div>
+                    <div id="forum-seq-status" class="text-white mt-0.5">Menunggu koneksi database...</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                <!-- Kolom Kiri: Opt [Ask a Question] (4 Kolom) -->
+                <div class="lg:col-span-4 bg-white rounded-2xl p-6 shadow-sm border border-slate-200 sticky top-24">
+                    <span class="bg-amber-400 text-slate-900 text-[11px] font-extrabold px-2.5 py-1 rounded-md uppercase">Opt [Ask a Question]</span>
+                    <h2 class="text-lg font-extrabold text-slate-800 mt-2">Ajukan Pertanyaan Baru</h2>
+                    <p class="text-xs text-slate-500 mt-1 mb-4">Menjalankan fungsi <code class="text-purple-600 font-bold">submitQuestion(text)</code> &rarr; <code class="text-purple-600 font-bold">saveNewQuestion(text)</code> ke Database.</p>
+
+                    <form id="form-tanya" onsubmit="kirimPertanyaan(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Nama Anda</label>
+                            <input type="text" id="tanya-nama" required placeholder="Contoh: Andi Pratama" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm bg-slate-50">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Isi Pertanyaan (<code class="text-purple-600">inputQuestion(text)</code>)</label>
+                            <textarea id="tanya-isi" rows="4" required placeholder="Tanyakan materi seputar SDLC, PIECES, Use Case, Sequence, atau Activity Diagram..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm bg-slate-50"></textarea>
+                        </div>
+                        <button type="submit" class="w-full py-3 px-5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-sm shadow-md transition transform hover:-translate-y-0.5">
+                            🚀 Kirim Pertanyaan (submitQuestion)
+                        </button>
+                    </form>
+
+                    <div class="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
+                        <span class="text-slate-400">Lifeline: <strong class="text-slate-600">Forum System &harr; DB</strong></span>
+                        <button onclick="muatForum()" class="text-purple-600 hover:underline font-bold">🔄 getDiscussions()</button>
+                    </div>
+                </div>
+
+                <!-- Kolom Kanan: Daftar Diskusi & Opt [Answer a Question] (8 Kolom) -->
+                <div class="lg:col-span-8 space-y-4">
+                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex items-center justify-between">
+                        <div>
+                            <h3 class="text-base font-extrabold text-slate-800">Daftar Diskusi Tanya Jawab (<code class="text-purple-600 text-sm">renderDiscussions()</code>)</h3>
+                            <p class="text-xs text-slate-500">Setiap kartu topik mendukung aksi <code class="text-emerald-600 font-bold">Opt [Answer a Question]: submitAnswer(questionId, text)</code></p>
+                        </div>
+                        <span id="forum-count-badge" class="bg-emerald-400 text-slate-900 text-xs font-extrabold px-3 py-1.5 rounded-xl">0 Topik</span>
+                    </div>
+
+                    <div id="forum-error-box" class="hidden bg-amber-50 border border-amber-300 rounded-2xl p-4 text-amber-900 text-xs space-y-1">
+                        <div class="font-extrabold text-sm">ℹ️ Mode Penyimpanan Lokal Aktif (Server FastAPI belum dijalankan)</div>
+                        <p>Anda tetap dapat mencoba fitur <strong>Ask a Question</strong> dan <strong>Answer a Question</strong> secara interaktif! Untuk terhubung ke database server, jalankan <code class="bg-amber-200 px-1.5 py-0.5 rounded font-bold">uvicorn main:app --reload</code>.</p>
+                    </div>
+
+                    <div id="forum-list-container" class="space-y-4">
+                        <!-- Di-render oleh JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- TAB 4: APLIKASI PEMBUAT UML (Interactive UML Maker Application)       -->
+        <!-- Sequence Diagram: UML Maker Application                               -->
+        <!-- ===================================================================== -->
+        <section id="section-uml" class="hidden space-y-6">
+            <!-- Header Banner & Choose Diagram Type -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 space-y-5">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 pb-5">
+                    <div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="bg-purple-100 text-purple-700 text-[11px] font-extrabold px-3 py-1 rounded-full uppercase">Use Case: Aplikasi Pembuat UML</span>
+                            <span class="bg-emerald-100 text-emerald-700 text-[11px] font-extrabold px-3 py-1 rounded-full">&laquo;include&raquo; Pengeditan Diagram &amp; Download Hasil Pembuatan</span>
+                        </div>
+                        <h2 class="text-2xl font-extrabold text-slate-800 mt-2">UML Maker Application (Editor Interaktif)</h2>
+                        <p class="text-xs sm:text-sm text-slate-500">Pilih tipe diagram (<code class="text-purple-600 font-semibold">chooseDiagramType</code>), tambah/pindahkan/hapus/hubungkan shape di kanvas, lalu unduh hasilnya.</p>
+                    </div>
+
+                    <!-- alt Choose Diagram Type (Use Case / Sequence / Activity) -->
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="chooseDiagramType('usecase')" id="btn-uml-usecase" class="sub-btn-active px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm border border-slate-200 transition flex items-center gap-1.5">
+                            <span>👤</span> <span>Use Case Diagram</span>
+                        </button>
+                        <button onclick="chooseDiagramType('sequence')" id="btn-uml-sequence" class="px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition flex items-center gap-1.5">
+                            <span>🔄</span> <span>Sequence Diagram</span>
+                        </button>
+                        <button onclick="chooseDiagramType('activity')" id="btn-uml-activity" class="px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition flex items-center gap-1.5">
+                            <span>⚡</span> <span>Activity Diagram</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Workspace Grid: Control Panel (Kiri 4 Kolom) & Interactive Canvas (Kanan 8 Kolom) -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+                    <!-- PANEL KONTROL PENGEDITAN DIAGRAM (loop Editing Diagram) -->
+                    <div class="lg:col-span-4 space-y-4">
+                        <!-- 1. Aksi inputShape(type, label) -->
+                        <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[11px] font-extrabold uppercase text-purple-700 bg-purple-100 px-2.5 py-0.5 rounded">&laquo;extend&raquo; Input Shape</span>
+                                <code class="text-[10px] text-slate-500">inputShape(type, label)</code>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Tipe Elemen / Shape</label>
+                                <select id="uml-input-type" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold bg-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                    <!-- Diisi dinamis sesuai tipe diagram -->
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Label Shape</label>
+                                <input type="text" id="uml-input-label" placeholder="Contoh: Mengelola Data..." class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            </div>
+                            <button onclick="handleInputShape()" class="w-full py-2.5 px-4 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-xs shadow-sm transition">
+                                ➕ Tambah Shape ke Kanvas
+                            </button>
+                        </div>
+
+                        <!-- 2. Aksi connectShapes(shapeId1, shapeId2, relationship) -->
+                        <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[11px] font-extrabold uppercase text-indigo-700 bg-indigo-100 px-2.5 py-0.5 rounded">Connect Shapes</span>
+                                <code class="text-[10px] text-slate-500">connectShapes(id1, id2, rel)</code>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Dari Shape (Asal)</label>
+                                    <select id="uml-conn-from" class="w-full px-2.5 py-2 rounded-xl border border-slate-200 text-xs bg-white"></select>
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Ke Shape (Tujuan)</label>
+                                    <select id="uml-conn-to" class="w-full px-2.5 py-2 rounded-xl border border-slate-200 text-xs bg-white"></select>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Jenis Relasi</label>
+                                    <select id="uml-conn-rel" class="w-full px-2.5 py-2 rounded-xl border border-slate-200 text-xs bg-white">
+                                        <option value="association">Association / Garis Lurus</option>
+                                        <option value="include">&laquo;include&raquo; (Dashed Arrow)</option>
+                                        <option value="extend">&laquo;extend&raquo; (Dashed Arrow)</option>
+                                        <option value="generalization">Generalization (Inheritance)</option>
+                                        <option value="flow">Panah Alur / Message</option>
+                                        <option value="return">Return Message (Dashed)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Label Custom (Opsional)</label>
+                                    <input type="text" id="uml-conn-label" placeholder="Misal: 1: login()" class="w-full px-2.5 py-2 rounded-xl border border-slate-200 text-xs bg-white">
+                                </div>
+                            </div>
+                            <button onclick="handleConnectShapes()" class="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs shadow-sm transition">
+                                🔗 Hubungkan Kedua Shape
+                            </button>
+                        </div>
+
+                        <!-- 3. Aksi relocateShape(shapeId, newCoords) & deleteShape(shapeId) -->
+                        <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[11px] font-extrabold uppercase text-amber-800 bg-amber-200 px-2.5 py-0.5 rounded">&laquo;extend&raquo; Relokasi &amp; Delete</span>
+                                <code class="text-[10px] text-slate-500">relocate / deleteShape</code>
+                            </div>
+                            <p class="text-[11px] text-slate-500">💡 <strong>Tips:</strong> Anda bisa langsung <strong>klik &amp; geser (drag)</strong> shape di kanvas, atau pilih shape di bawah ini untuk memindahkan koordinat / menghapusnya:</p>
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-700 mb-1">Shape Terpilih (<code class="text-purple-600">shapeId</code>)</label>
+                                <select id="uml-selected-shape" onchange="onSelectShapeDropdown()" class="w-full px-2.5 py-2 rounded-xl border border-slate-200 text-xs bg-white font-semibold"></select>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2">
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-600">Koordinat X</label>
+                                    <input type="number" id="uml-coord-x" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs bg-white">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-600">Koordinat Y</label>
+                                    <input type="number" id="uml-coord-y" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs bg-white">
+                                </div>
+                                <div class="flex items-end">
+                                    <button onclick="handleRelocateFromInput()" class="w-full py-1.5 px-2 rounded-lg bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold text-xs transition">
+                                        📍 Pindah
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="flex gap-2 pt-1">
+                                <button onclick="handleDeleteSelectedShape()" class="flex-1 py-2 px-3 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-extrabold text-xs transition">
+                                    🗑️ Delete Shape Terpilih
+                                </button>
+                                <button onclick="handleDeleteLastConnection()" class="py-2 px-3 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs transition" title="Hapus garis relasi terakhir">
+                                    ✂️ Hapus Garis
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AREA KANVAS INTERAKTIF (8 Kolom) -->
+                    <div class="lg:col-span-8 space-y-4">
+                        <div class="bg-slate-100 rounded-2xl border-2 border-slate-300 p-4 flex flex-col justify-between">
+                            <!-- Top Bar Kanvas -->
+                            <div class="flex flex-wrap items-center justify-between gap-2 mb-3 bg-white px-4 py-2.5 rounded-xl border border-slate-200">
+                                <div class="flex items-center space-x-2">
+                                    <span class="w-3 h-3 rounded-full bg-rose-400"></span>
+                                    <span class="w-3 h-3 rounded-full bg-amber-400"></span>
+                                    <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
+                                    <span id="uml-canvas-title" class="ml-2 text-xs font-extrabold text-slate-700 uppercase tracking-wider">KANVAS: USE CASE DIAGRAM</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button onclick="loadPresetDiagram()" class="text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-lg border border-indigo-200 transition">
+                                        ✨ Muat Template Standar
+                                    </button>
+                                    <button onclick="clearCanvas()" class="text-xs bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold px-3 py-1 rounded-lg border border-rose-200 transition">
+                                        🧹 Kosongkan Kanvas
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Interactive SVG Canvas -->
+                            <div class="svg-canvas-grid rounded-xl border border-slate-300 overflow-hidden shadow-inner relative">
+                                <svg id="uml-interactive-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 480" class="w-full h-[440px] select-none">
+                                    <!-- Di-render dinamis oleh fungsi renderUpdatedView() -->
+                                </svg>
+                            </div>
+
+                            <!-- Bottom Bar: Sequence Log & requestDownload(format) -->
+                            <div class="mt-4 bg-white p-4 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+                                <div class="text-xs space-y-0.5">
+                                    <div class="font-extrabold text-slate-700">Log Aktivitas Editor (<code class="text-purple-600">updateCanvasData &rarr; renderUpdatedView</code>):</div>
+                                    <div id="uml-action-log" class="text-slate-500 font-mono text-[11px]">openApplication() &rarr; initializeCanvas('usecase')</div>
+                                </div>
+
+                                <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                                    <select id="uml-download-format" class="px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-bold bg-slate-50 text-slate-700">
+                                        <option value="svg">Format .SVG (Vector)</option>
+                                        <option value="png">Format .PNG (Gambar)</option>
+                                    </select>
+                                    <button onclick="requestDownload()" class="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-xs sm:text-sm shadow-md transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                                        <span>📥 Download Hasil Pembuatan</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-slate-200 py-5 mt-10">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500 font-medium">
+            <div>Aplikasi Edukasi <strong>edu Aps</strong> &bull; Analisis dan Perancangan Sistem Informasi</div>
+            <div>Sesuai Spesifikasi Use Case Diagram &amp; 4 Sequence Diagram Sistem</div>
+        </div>
+    </footer>
+
+    <!-- ========================================================================= -->
+    <!-- JAVASCRIPT: LOGIKA 4 SISTEM UTAMA SESUAI SEQUENCE DIAGRAM                 -->
+    <!-- ========================================================================= -->
+    <script>
+        const API_BASE_URL = "http://127.0.0.1:8000";
+
+        // -------------------------------------------------------------------------
+        // DATA FALLBACK LOKAL (Digunakan otomatis jika FastAPI sedang offline)
+        // -------------------------------------------------------------------------
+        const FALLBACK_MATERI = [
+            {
+                id: 1,
+                kode: "Materi 1",
+                minggu: "Pertemuan 1",
+                judul: "Pengantar Pengembangan Sistem & Konsep Dasar SI",
+                ringkasan: "Konsep dasar sistem, subsistem, 7 karakteristik sistem, komponen CBIS, klasifikasi SI (TPS, MIS, DSS, Expert System), serta siklus pengembangan sistem.",
+                konten_html: `
+                    <p><strong>1. Pengertian Sistem &amp; Subsistem:</strong> Sistem adalah sekumpulan elemen atau objek yang saling berelasi, berinteraksi, dan bekerja sama sebagai satu kesatuan untuk mencapai tujuan tertentu (Murdick &amp; Ross, 1993; McLeod, 1995). Sistem terdiri dari <em>Input &rarr; Pengolahan (Transformasi) &rarr; Output</em> dengan mekanisme kontrol. Sistem kompleks tersusun atas beberapa <strong>subsistem</strong>.</p>
+                    <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 my-3">
+                        <h4 class="font-bold text-slate-800 mb-1">7 Karakteristik Sistem:</h4>
+                        <p class="text-sm">Batasan (<em>Boundary</em>), Lingkungan (<em>Environment</em>), Masukan (<em>Input</em>), Keluaran (<em>Output</em>), Komponen (<em>Component</em>), Penghubung (<em>Interface</em>), dan Penyimpanan (<em>Storage</em>).</p>
+                    </div>
+                    <p><strong>2. Komponen &amp; Klasifikasi Sistem Informasi:</strong> Menurut Stair (1992), CBIS terdiri dari <em>Hardware, Software, Database, Telekomunikasi, dan Manusia</em>. Burch &amp; Grudnitski (1986) membaginya menjadi 6 blok bangunan (Masukan, Model, Keluaran, Teknologi, Basis Data, Kendali). Klasifikasi SI meliputi <strong>TPS</strong> (Transaction Processing System), <strong>MIS</strong> (Management Information System), <strong>DSS</strong> (Decision Support System), dan <strong>Expert System</strong>.</p>
+                    <p><strong>3. Pengembangan Sistem:</strong> Dilakukan untuk menyusun sistem baru guna menggantikan atau memperbaiki sistem lama karena adanya masalah, pertumbuhan organisasi, meraih peluang bisnis, atau kebijakan. Tujuannya meningkatkan <strong>Throughput</strong> (jumlah pekerjaan dalam satu waktu) dan mempercepat <strong>Response Time</strong>.</p>
+                    <p><strong>4. Prinsip &amp; Siklus Pengembangan:</strong> Sistem dikembangkan untuk manajemen, merupakan investasi modal besar, memerlukan SDM terdidik, memiliki dokumentasi, serta menggunakan alat perancangan seperti <em>HIPO, DFD, Structured Chart, SADT, Warnier/Orr, Jackson's Diagram</em>, dan manajemen proyek <strong>CPM &amp; PERT</strong>.</p>
+                `
+            },
+            {
+                id: 2,
+                kode: "Materi 2",
+                minggu: "Pertemuan 2",
+                judul: "Investigasi Kebutuhan Sistem & Rekayasa Kebutuhan",
+                ringkasan: "Tahapan Preliminary Investigation, kerangka PIECES, keputusan Go or No Go, 7 langkah Requirement Engineering, serta kebutuhan Fungsional vs Non-Fungsional.",
+                konten_html: `
+                    <p><strong>1. Preliminary Investigation (Investigasi Awal):</strong> Tahap awal analisis pengembangan sistem (biasa selesai dalam 2–3 hari). Terdiri dari 5 tahap: (1) <em>List Problems, Opportunities, and Directives</em> (dikategorikan dengan kerangka <strong>PIECES</strong>), (2) <em>Negotiate Preliminary Scope</em>, (3) <em>Assess Project Worth</em> (menghasilkan keputusan <strong>"Go or No Go"</strong>), (4) <em>Plan the Project</em>, dan (5) <em>Present the Project and Plan</em> (menghasilkan <em>Project Charter</em>).</p>
+                    <p><strong>2. Identifikasi Masalah:</strong> Meliputi 3 langkah berurutan: (1) Mengidentifikasi <strong>penyebab masalah</strong>, (2) Mengidentifikasi <strong>titik keputusan</strong>, dan (3) Mengidentifikasi <strong>personil kunci</strong>.</p>
+                    <div class="bg-amber-50 p-4 rounded-xl border border-amber-200 my-3">
+                        <h4 class="font-bold text-slate-800 mb-1">7 Kegiatan Rekayasa Kebutuhan (Requirement Engineering):</h4>
+                        <p class="text-sm">1. <em>Inception</em> &bull; 2. <em>Elicitation</em> &bull; 3. <em>Elaboration</em> &bull; 4. <em>Negotiation</em> &bull; 5. <em>Specification</em> &bull; 6. <em>Validation</em> &bull; 7. <em>Requirements Management</em>.</p>
+                    </div>
+                    <p><strong>3. Kebutuhan Fungsional vs Non-Fungsional:</strong></p>
+                    <ul class="list-disc pl-5 space-y-1 text-sm">
+                        <li><strong>Kebutuhan Fungsional:</strong> Layanan spesifik yang harus disediakan sistem dan bagaimana sistem bereaksi terhadap input.</li>
+                        <li><strong>Kebutuhan Non-Fungsional:</strong> Batasan pada layanan sistem yang meliputi <em>Kebutuhan Produk</em> (kinerja, waktu respon &le; 10 detik), <em>Kebutuhan Organisasi</em>, dan <em>Kebutuhan Eksternal</em>.</li>
+                    </ul>
+                `
+            },
+            {
+                id: 3,
+                kode: "Materi 3",
+                minggu: "Pertemuan 3",
+                judul: "Systems Development Life Cycle (SDLC) & Metodologi",
+                ringkasan: "Empat fase utama SDLC (Planning, Analysis, Design, Implementation) beserta deliverables dan perbandingan metode Waterfall, Prototype, Spiral, RAD, dan Scrum.",
+                konten_html: `
+                    <p><strong>1. Konsep Dasar SDLC:</strong> Proses mengembangkan atau mengubah sistem perangkat lunak menggunakan model dan metodologi teruji. Empat fase utama beserta keluarannya (<em>Deliverables</em>):</p>
+                    <ul class="list-disc pl-5 space-y-1 text-sm">
+                        <li><strong>Planning (Why build?):</strong> Mengidentifikasi nilai bisnis &amp; analisis kelayakan &rarr; menghasilkan <em>System Proposal</em>.</li>
+                        <li><strong>Analysis (Who, what, when, where?):</strong> Mengumpulkan kebutuhan &amp; mempelajari sistem &rarr; menghasilkan <em>Business Process Model / System Specification</em>.</li>
+                        <li><strong>Design (How will the system work?):</strong> Desain program (UML), UI, dan database (ERD) &rarr; menghasilkan <em>System Specification</em>.</li>
+                        <li><strong>Implementation:</strong> Konstruksi sistem, Testing, dan Instalasi &rarr; menghasilkan <em>New System</em>.</li>
+                    </ul>
+                    <div class="bg-purple-50 p-4 rounded-xl border border-purple-100 my-3">
+                        <h4 class="font-bold text-slate-800 mb-1">5 Metode Pengembangan SDLC:</h4>
+                        <p class="text-sm"><strong>1. Waterfall:</strong> Sekuensial dan bertahap.<br>
+                        <strong>2. Prototype:</strong> Membuat <em>mock-up</em> cepat agar user dapat mengevaluasi lebih awal.<br>
+                        <strong>3. Spiral (Barry Boehm):</strong> Berfokus pada <strong>Analisis Risiko (Risk Analysis)</strong> di setiap iterasi.<br>
+                        <strong>4. RAD:</strong> Pembangunan cepat melalui <em>Requirements Planning, User Design, Construction, Cutover</em>.<br>
+                        <strong>5. Scrum (Agile):</strong> Iterasi <em>Sprints (~30 hari)</em> bersama <em>Product Owner, Scrum Master, dan Tim Scrum</em>.</p>
+                    </div>
+                `
+            },
+            {
+                id: 4,
+                kode: "Materi 4",
+                minggu: "Pertemuan 4",
+                judul: "Unified Modeling Language (UML) & Use Case Diagram",
+                ringkasan: "Sejarah penyatuan UML (Booch, Rumbaugh, Jacobson), 4 View UML, komponen Use Case Diagram, serta relasi <<include>>, <<extend>>, dan Generalization.",
+                konten_html: `
+                    <p><strong>1. Sejarah &amp; Konsep UML:</strong> UML (<em>Unified Modeling Language</em>) adalah bahasa pemodelan visual standar yang menyatukan metode <strong>G. Booch (OOD)</strong>, <strong>J. Rumbaugh (OMT)</strong>, dan <strong>I. Jacobson (OOSE)</strong> pada tahun 1995. UML memiliki 4 view: <em>Use Case View, Logical View, Physical View, dan Component View</em>.</p>
+                    <p><strong>2. Konsep Dasar Use Case Diagram:</strong> Memodelkan "apa" yang dilakukan sistem dari sudut pandang pengguna. Terdiri dari 4 elemen utama: <strong>Actor</strong>, <strong>Use Case</strong>, <strong>Subject/System Boundary</strong>, dan <strong>Relationship</strong>.</p>
+                    <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-200 my-3">
+                        <h4 class="font-bold text-slate-800 mb-1">3 Relasi Penting Antar Use Case:</h4>
+                        <ul class="list-disc pl-5 text-sm space-y-1">
+                            <li><strong>&laquo;include&raquo; (Wajib):</strong> Use case mutlak membutuhkan use case lain (contoh: <em>Ruang Tryout &rarr; &laquo;include&raquo; &rarr; Hasil Ujian</em>).</li>
+                            <li><strong>&laquo;extend&raquo; (Opsional):</strong> Use case tambahan pada kondisi tertentu, arah panah menuju ke <strong>use case dasar/utama</strong>.</li>
+                            <li><strong>Generalization (Spesialisasi):</strong> Pewarisan fungsi umum ke khusus (contoh: <em>Ruang Belajar &rarr; Materi 1..6</em>).</li>
+                        </ul>
+                    </div>
+                `
+            },
+            {
+                id: 5,
+                kode: "Materi 5",
+                minggu: "Pertemuan 5",
+                judul: "Analisis, Desain, dan Implementasi Sistem",
+                ringkasan: "Empat langkah analisis sistem (Identify, Understand, Analyze, Report), Conceptual vs Physical Design, pengujian error, serta 4 pendekatan konversi sistem.",
+                konten_html: `
+                    <p><strong>1. Empat Langkah Analisis Sistem:</strong> (1) <strong>Identify</strong> (Identifikasi penyebab masalah, titik keputusan, personil kunci), (2) <strong>Understand</strong> (Memahami kerja sistem melalui survei terinci), (3) <strong>Analyze</strong> (Menganalisis kelemahan &amp; kebutuhan), dan (4) <strong>Report</strong> (Laporan hasil analisis).</p>
+                    <p><strong>2. Desain Sistem:</strong> Terbagi atas <strong>Conceptual Design (Desain Umum)</strong> dan <strong>Physical Design (Desain Terinci)</strong>.</p>
+                    <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 my-3">
+                        <h4 class="font-bold text-slate-800 mb-1">Tahap Implementasi &amp; 4 Konversi Sistem:</h4>
+                        <p class="text-sm">Penjadwalan dengan <strong>Gantt Chart</strong>, pengujian (<em>Syntax, Run-Time, Logical Error</em>), serta 4 metode konversi: <strong>Konversi Langsung (Direct)</strong>, <strong>Paralel (Parallel)</strong>, <strong>Percontohan (Pilot)</strong>, dan <strong>Bertahap (Phased)</strong>.</p>
+                    </div>
+                `
+            },
+            {
+                id: 6,
+                kode: "Materi 6",
+                minggu: "Pertemuan 6",
+                judul: "Pemeliharaan Sistem (System Maintenance)",
+                ringkasan: "Hukum evolusi perangkat lunak, indikator MTBF, 4 tipe pemeliharaan (Corrective, Adaptive, Perfective, Preventive), serta CASE Tools (Forward & Reverse Engineering).",
+                konten_html: `
+                    <p><strong>1. Konsep &amp; Hukum Evolusi Perangkat Lunak:</strong> Pemeliharaan adalah fase terpanjang dalam SDLC. Keandalan sistem diukur menggunakan <strong>MTBF (Mean Time Between Failures)</strong>.</p>
+                    <div class="bg-amber-50 p-4 rounded-xl border border-amber-200 my-3">
+                        <h4 class="font-bold text-slate-800 mb-1">4 Tipe Pemeliharaan Sistem:</h4>
+                        <ul class="list-disc pl-5 text-sm space-y-1">
+                            <li><strong>Corrective Maintenance:</strong> Memperbaiki bug/error saat sistem beroperasi.</li>
+                            <li><strong>Adaptive Maintenance:</strong> Menyesuaikan sistem terhadap perubahan lingkungan/regulasi baru.</li>
+                            <li><strong>Perfective Maintenance:</strong> Meningkatkan performa atau fitur sistem.</li>
+                            <li><strong>Preventive Maintenance:</strong> Pencegahan kerusakan di masa depan (backup rutin, patch).</li>
+                        </ul>
+                    </div>
+                    <p><strong>2. CASE Tools:</strong> Mendukung <strong>Forward Engineering</strong>, <strong>Reverse Engineering</strong> (membuat dokumentasi dari kode sistem lama), <strong>Reengineering</strong>, dan <strong>Restructuring</strong>.</p>
+                `
+            }
+        ];
+
+        const FALLBACK_TRYOUT = {
+            "Materi 1": [
+                { id: 101, kategori: "Materi 1", pertanyaan: "Ukuran kinerja sistem yang menunjukkan jumlah pekerjaan yang dapat dilakukan pada suatu saat tertentu disebut...", opsi: ["Response Time", "Throughput", "Boundary", "Confirmability"], kunci_index: 1, pembahasan: "Throughput menunjukkan jumlah pekerjaan yang diselesaikan dalam satu waktu tertentu." },
+                { id: 102, kategori: "Materi 1", pertanyaan: "Sistem informasi yang mengotomasi penanganan data aktivitas bisnis dan transaksi rutin harian disebut...", opsi: ["Expert System", "Decision Support System (DSS)", "Transaction Processing System (TPS)", "Executive Information System"], kunci_index: 2, pembahasan: "TPS menangani pemrosesan transaksi operasional harian." },
+                { id: 103, kategori: "Materi 1", pertanyaan: "Berikut ini yang BUKAN merupakan kriteria pemeriksaan keabsahan data sumber informasi adalah...", opsi: ["Credibility (Derajat Kepercayaan)", "Transferability (Keteralihan)", "Profitability (Tingkat Keuntungan)", "Confirmability (Kepastian)"], kunci_index: 2, pembahasan: "Kriteria keabsahan data meliputi Credibility, Transferability, Dependability, dan Confirmability." }
+            ],
+            "Materi 2": [
+                { id: 201, kategori: "Materi 2", pertanyaan: "Tahapan dalam Preliminary Investigation yang menghasilkan keputusan 'Go or No Go' adalah...", opsi: ["Negotiate Preliminary Scope", "Assess Project Worth", "List Problems & Directives", "Present the Project"], kunci_index: 1, pembahasan: "Assess Project Worth mengevaluasi kelayakan proyek untuk memutuskan Go atau No Go." },
+                { id: 202, kategori: "Materi 2", pertanyaan: "Kerangka kerja yang digunakan untuk membuat kategori Problems, Opportunities, dan Directives adalah...", opsi: ["SDLC", "HIPO", "PIECES", "SCRUM"], kunci_index: 2, pembahasan: "PIECES digunakan untuk mengkategorikan masalah, peluang, dan arahan." },
+                { id: 203, kategori: "Materi 2", pertanyaan: "'Proses menampilkan artikel berlangsung tidak lebih dari 10 detik dan ukuran program maksimal 100 MB' merupakan contoh...", opsi: ["Kebutuhan Fungsional", "Kebutuhan Non-Fungsional", "Titik Keputusan", "Inisiasi Proyek"], kunci_index: 1, pembahasan: "Batasan performa dan memori merupakan Kebutuhan Non-Fungsional." }
+            ],
+            "Materi 3": [
+                { id: 301, kategori: "Materi 3", pertanyaan: "Model SDLC yang diperkenalkan oleh Barry Boehm dan sangat menekankan pada Analisis Risiko (Risk Analysis) adalah...", opsi: ["Model Waterfall", "Model Prototype", "Model Spiral", "Model RAD"], kunci_index: 2, pembahasan: "Model Spiral menekankan Analisis Risiko di setiap iterasi." },
+                { id: 302, kategori: "Materi 3", pertanyaan: "Dalam metode Agile Scrum, pihak yang bertanggung jawab menyusun daftar kebutuhan awal (Product Backlog) adalah...", opsi: ["Scrum Master", "Product Owner", "Database Administrator", "System Tester"], kunci_index: 1, pembahasan: "Product Owner bertanggung jawab atas Product Backlog." },
+                { id: 303, kategori: "Materi 3", pertanyaan: "Empat fase berurutan dalam metode Rapid Application Development (RAD) adalah...", opsi: ["Inception, Elicitation, Elaboration, Negotiation", "Requirements Planning, User Design, Construction, Cutover", "Planning, Risk Analysis, Engineering, Evaluation", "Backlog, Sprint, Daily Meeting, Demo"], kunci_index: 1, pembahasan: "Tahapan RAD: Requirements Planning, User Design, Construction, Cutover." }
+            ],
+            "Materi 4": [
+                { id: 401, kategori: "Materi 4", pertanyaan: "Tiga tokoh pelopor yang menyatukan bahasa pemodelan OOD, OMT, dan OOSE menjadi UML pada tahun 1995 adalah...", opsi: ["Satzinger, Jackson, dan Burd", "Booch, Rumbaugh, dan Jacobson", "Pressman, Sommerville, dan Hoffer", "Murdick, Ross, dan McLeod"], kunci_index: 1, pembahasan: "Booch, Rumbaugh, dan Jacobson dikenal sebagai Three Amigos pencetus UML." },
+                { id: 402, kategori: "Materi 4", pertanyaan: "Relasi dalam Use Case Diagram yang bersifat OPSIONAL dan arah panahnya menunjuk ke use case dasar/utama adalah...", opsi: ["<<include>>", "<<extend>>", "Association", "Boundary"], kunci_index: 1, pembahasan: "<<extend>> merupakan perluasan opsional yang menunjuk ke use case dasar." },
+                { id: 403, kategori: "Materi 4", pertanyaan: "Penekanan utama dalam pembuatan Use Case Diagram adalah menggambarkan...", opsi: ["Bagaimana algoritma kode program dieksekusi di memori", "Struktur tabel dan relasi foreign key di database", "Apa yang diperbuat/disediakan sistem (fungsionalitas) bagi aktor", "Spesifikasi perangkat keras jaringan server"], kunci_index: 2, pembahasan: "Use Case menggambarkan fungsionalitas sistem dari sudut pandang Actor." }
+            ],
+            "Materi 5": [
+                { id: 501, kategori: "Materi 5", pertanyaan: "Urutan 4 langkah utama dalam tahapan Analisis Sistem yang benar adalah...", opsi: ["Plan - Code - Test - Deploy", "Identify - Understand - Analyze - Report", "Design - Implement - Convert - Maintain", "Survey - Flowchart - Gantt Chart - Cutover"], kunci_index: 1, pembahasan: "4 langkah analisis: Identify, Understand, Analyze, Report." },
+                { id: 502, kategori: "Materi 5", pertanyaan: "Pendekatan konversi sistem yang mengoperasikan sistem baru BERSAMAAN dengan sistem lama selama periode tertentu disebut...", opsi: ["Konversi Langsung (Direct)", "Konversi Paralel (Parallel)", "Konversi Percontohan (Pilot)", "Konversi Bertahap (Phased)"], kunci_index: 1, pembahasan: "Konversi Paralel mengoperasikan sistem lama dan baru secara bersamaan." },
+                { id: 503, kategori: "Materi 5", pertanyaan: "Kesalahan program ketika sintaks kode sudah benar namun hasil perhitungan tidak sesuai yang diharapkan disebut...", opsi: ["Syntax Error", "Language Error", "Logical Error", "Hardware Error"], kunci_index: 2, pembahasan: "Logical Error adalah kesalahan logika perhitungan." }
+            ],
+            "Materi 6": [
+                { id: 601, kategori: "Materi 6", pertanyaan: "Memperbaiki rumus perhitungan total belanja yang salah pada aplikasi kasir termasuk jenis pemeliharaan...", opsi: ["Preventive Maintenance", "Adaptive Maintenance", "Corrective Maintenance", "Perfective Maintenance"], kunci_index: 2, pembahasan: "Corrective Maintenance memperbaiki bug atau kesalahan perhitungan." },
+                { id: 602, kategori: "Materi 6", pertanyaan: "Indikator pengukuran efektivitas pemeliharaan yang menghitung rata-rata waktu antar kegagalan sistem disebut...", opsi: ["MTBF (Mean Time Between Failures)", "SMLC (System Maintenance Life Cycle)", "CMS (Change Management System)", "JAD (Joint Application Development)"], kunci_index: 0, pembahasan: "MTBF adalah Mean Time Between Failures." },
+                { id: 603, kategori: "Materi 6", pertanyaan: "Proses menganalisis sistem yang sudah ada untuk menciptakan dokumentasi sistem yang sebelumnya tidak ada disebut...", opsi: ["Forward Engineering", "Reverse Engineering", "Direct Conversion", "Unit Testing"], kunci_index: 1, pembahasan: "Reverse Engineering mengekstrak dokumentasi desain dari sistem yang sudah ada." }
+            ],
+            "Soal UAS": [
+                { id: 701, kategori: "Soal UAS", pertanyaan: "[UAS 1] Manakah pasangan fase SDLC dan deliverable (keluaran utama) yang TEPAT di bawah ini?", opsi: ["Planning -> menghasilkan System Proposal", "Analysis -> menghasilkan Source Code Error-Free", "Design -> menghasilkan Project Charter awal", "Implementation -> menghasilkan Preliminary Scope"], kunci_index: 0, pembahasan: "Fase Planning menghasilkan System Proposal." },
+                { id: 702, kategori: "Soal UAS", pertanyaan: "[UAS 2] Pada Use Case Diagram edu Aps, setiap kali pengguna mengerjakan Tryout (Materi 1..6 maupun Soal UAS), sistem WAJIB menampilkan 'Hasil Ujian'. Relasi UML yang digunakan adalah...", opsi: ["<<extend>>", "<<include>>", "Generalization", "System Boundary"], kunci_index: 1, pembahasan: "Relasi <<include>> wajib dijalankan setiap kali use case Tryout dieksekusi." },
+                { id: 703, kategori: "Soal UAS", pertanyaan: "[UAS 3] Pada Sequence Diagram 'Taking a Tryout & Viewing Exam Results', komponen yang bertugas menghitung skor (Calculate Score) dan menyimpan hasil ke Database adalah...", opsi: ["Interface", "Tryout System", "Grading System", "File Storage"], kunci_index: 2, pembahasan: "Grading System menghitung skor dan menyimpan hasil ujian ke Database." },
+                { id: 704, kategori: "Soal UAS", pertanyaan: "[UAS 4] Menyesuaikan laporan sistem informasi akuntansi perusahaan karena adanya Undang-Undang Perpajakan baru merupakan contoh...", opsi: ["Corrective Maintenance", "Preventive Maintenance", "Adaptive Maintenance", "Reverse Engineering"], kunci_index: 2, pembahasan: "Adaptive Maintenance menyesuaikan sistem terhadap perubahan regulasi eksternal." },
+                { id: 705, kategori: "Soal UAS", pertanyaan: "[UAS 5] Pendekatan konversi sistem yang menerapkan sistem baru di SATU cabang perusahaan terlebih dahulu sebelum ke cabang lain disebut...", opsi: ["Konversi Langsung (Direct)", "Konversi Paralel (Parallel)", "Konversi Percontohan (Pilot)", "Konversi Bertahap (Phased)"], kunci_index: 2, pembahasan: "Konversi Percontohan (Pilot) menguji sistem di satu lokasi/cabang lebih dulu." },
+                { id: 706, kategori: "Soal UAS", pertanyaan: "[UAS 6] Pada Sequence Diagram 'UML Maker Application', proses pengeditan diagram dalam blok loop mendukung aksi berikut, KECUALI...", opsi: ["inputShape(type, label)", "relocateShape(shapeId, newCoords)", "deleteShape(shapeId)", "compileJavaBytecode(className)"], kunci_index: 3, pembahasan: "4 aksi editor UML adalah inputShape, relocateShape, deleteShape, dan connectShapes." }
+            ]
+        };
+
+        const TRYOUT_CATEGORIES = ["Materi 1", "Materi 2", "Materi 3", "Materi 4", "Materi 5", "Materi 6", "Soal UAS"];
+
+        // State Global
+        let daftarMateriState = [...FALLBACK_MATERI];
+        let activeMateriId = 1;
+        let activeTryoutCategory = "Materi 1";
+        let activeTryoutQuestions = [];
+        let localExamHistory = [];
+        let localForumData = [
+            {
+                id: 1,
+                nama_user: "Rina Wijaya",
+                isi_pertanyaan: "Apa perbedaan utama antara relasi <<include>> pada Hasil Ujian dengan <<extend>> pada Forum Tanya Jawab di Use Case Diagram edu Aps?",
+                waktu_dibuat: new Date(Date.now() - 3600000).toISOString(),
+                jawaban_list: [
+                    {
+                        id: 1,
+                        pertanyaan_id: 1,
+                        nama_user: "Budi Santoso",
+                        isi_jawaban: "Relasi <<include>> bersifat wajib dijalankan (setiap selesai Tryout pasti muncul Hasil Ujian), sedangkan <<extend>> bersifat opsional (saat membuka Forum Tanya Jawab, user boleh hanya membaca saja atau lanjut mengisi pertanyaan/jawaban).",
+                        waktu_dijawab: new Date(Date.now() - 1800000).toISOString()
+                    }
+                ]
+            }
+        ];
+
+        // -------------------------------------------------------------------------
+        // NAVIGASI 4 TAB UTAMA
+        // -------------------------------------------------------------------------
+        function switchMainTab(tabName) {
+            const tabs = ['belajar', 'tryout', 'forum', 'uml'];
+            tabs.forEach(t => {
+                const sec = document.getElementById(`section-${t}`);
+                const nav = document.getElementById(`nav-${t}`);
+                if (t === tabName) {
+                    sec.classList.remove('hidden');
+                    nav.classList.add('tab-active');
+                    nav.classList.remove('text-slate-600', 'hover:bg-white');
+                } else {
+                    sec.classList.add('hidden');
+                    nav.classList.remove('tab-active');
+                    nav.classList.add('text-slate-600', 'hover:bg-white');
+                }
+            });
+
+            if (tabName === 'belajar') {
+                openRuangBelajar();
+            } else if (tabName === 'tryout') {
+                bukaTryoutKategori(activeTryoutCategory);
+                muatRiwayatHasilUjian();
+            } else if (tabName === 'forum') {
+                muatForum();
+            } else if (tabName === 'uml') {
+                renderUpdatedView();
+            }
+        }
+
+        // -------------------------------------------------------------------------
+        // 1. SISTEM RUANG BELAJAR (Sequence: Mengakses Ruang Belajar)
+        // -------------------------------------------------------------------------
+        async function openRuangBelajar() {
+            const logEl = document.getElementById('belajar-seq-log');
+            logEl.innerHTML = `
+                <div>1: Pilih Ruang Belajar() &rarr; :Interface</div>
+                <div>1.1: Request Data Ruang Belajar() &rarr; :System Control</div>
+                <div>1.2: Get Materi &amp; Ruang Belajar() &rarr; :Database</div>
+            `;
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/ruang-belajar`);
+                if (res.ok) {
+                    daftarMateriState = await res.json();
+                    updateBackendBadge(true);
+                }
+            } catch (e) {
+                daftarMateriState = [...FALLBACK_MATERI];
+                updateBackendBadge(false);
+            }
+
+            renderDaftarMateri();
+            await pilihMateri(activeMateriId);
+        }
+
+        function renderDaftarMateri() {
+            const container = document.getElementById('belajar-selector');
+            container.innerHTML = daftarMateriState.map(m => `
+                <button onclick="pilihMateri(${m.id})"
+                    class="p-3.5 rounded-2xl border-2 border-slate-200 bg-white hover:border-amber-400 transition-all duration-200 text-left flex flex-col justify-between ${m.id === activeMateriId ? 'sub-btn-active' : 'text-slate-700'}">
+                    <span class="text-[10px] uppercase tracking-wider opacity-75 font-bold">${m.minggu}</span>
+                    <span class="text-sm font-extrabold mt-1">${m.kode}</span>
+                </button>
+            `).join('');
+        }
+
+        async function pilihMateri(materiId) {
+            activeMateriId = materiId;
+            renderDaftarMateri();
+
+            let detail = FALLBACK_MATERI.find(m => m.id === materiId) || FALLBACK_MATERI[0];
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/ruang-belajar/${materiId}`);
+                if (res.ok) {
+                    detail = await res.json();
+                }
+            } catch (e) {
+                // Gunakan detail fallback
+            }
+
+            document.getElementById('belajar-badge').textContent = `${detail.kode} • ${detail.minggu}`;
+            document.getElementById('belajar-title').textContent = detail.judul;
+            document.getElementById('belajar-ringkasan').textContent = detail.ringkasan || '';
+            document.getElementById('belajar-content').innerHTML = detail.konten_html;
+            document.getElementById('belajar-footer-kode').textContent = detail.kode;
+
+            document.getElementById('belajar-seq-log').innerHTML = `
+                <div>2: Pilih Materi (${detail.kode}) &rarr; :Interface</div>
+                <div>2.2: Get Detail Materi(materiId=${materiId}) &rarr; :Database</div>
+                <div class="text-amber-300 font-bold">2.4: Tampilkan Konten Materi() [Selesai]</div>
+            `;
+        }
+
+        function lanjutKeTryoutDariBelajar() {
+            const materi = daftarMateriState.find(m => m.id === activeMateriId);
+            const kategori = materi ? materi.kode : "Materi 1";
+            activeTryoutCategory = kategori;
+            switchMainTab('tryout');
+        }
+
+        // -------------------------------------------------------------------------
+        // 2. SISTEM RUANG TRYOUT & GRADING SYSTEM (Sequence: Taking a Tryout)
+        // -------------------------------------------------------------------------
+        function renderTryoutSelector() {
+            const container = document.getElementById('tryout-selector');
+            container.innerHTML = TRYOUT_CATEGORIES.map(kat => {
+                const isUAS = kat === "Soal UAS";
+                const isActive = kat === activeTryoutCategory;
+                return `
+                    <button onclick="bukaTryoutKategori('${kat}')"
+                        class="p-3 rounded-2xl border-2 border-slate-200 bg-white hover:border-amber-400 transition-all duration-200 text-left flex flex-col justify-between ${isActive ? 'sub-btn-active' : 'text-slate-700'}">
+                        <span class="text-[10px] uppercase tracking-wider font-bold ${isUAS ? 'text-purple-700' : 'opacity-70'}">${isUAS ? 'Evaluasi Akhir' : 'Tryout Bab'}</span>
+                        <span class="text-sm font-extrabold mt-1">${kat}</span>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        async function bukaTryoutKategori(kategori) {
+            activeTryoutCategory = kategori;
+            renderTryoutSelector();
+
+            document.getElementById('tryout-seq-indicator').textContent = `1. Selects Tryout (${kategori}) → 3. Fetch Questions → 6. Display the test`;
+            document.getElementById('tryout-title').textContent = `Lembar Tryout: ${kategori}`;
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/tryout/questions/${encodeURIComponent(kategori)}`);
+                if (res.ok) {
+                    activeTryoutQuestions = await res.json();
+                    updateBackendBadge(true);
+                } else {
+                    activeTryoutQuestions = FALLBACK_TRYOUT[kategori] || [];
+                }
+            } catch (e) {
+                activeTryoutQuestions = FALLBACK_TRYOUT[kategori] || [];
+                updateBackendBadge(false);
+            }
+
+            const qContainer = document.getElementById('tryout-questions-container');
+            qContainer.innerHTML = activeTryoutQuestions.map((q, idx) => `
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2.5">
+                    <p class="text-xs md:text-sm font-bold text-slate-800">${idx + 1}. ${q.pertanyaan}</p>
+                    <div class="space-y-1.5">
+                        ${q.opsi.map((opt, oIdx) => `
+                            <label class="flex items-center space-x-2.5 p-2 rounded-lg hover:bg-white border border-transparent hover:border-slate-200 cursor-pointer transition text-xs md:text-sm">
+                                <input type="radio" name="tryout_q_${idx}" value="${oIdx}" required class="accent-purple-600 w-4 h-4">
+                                <span class="text-slate-700 font-medium">${opt}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+
+            resetTryoutForm();
+        }
+
+        async function submitTryoutAnswers(event) {
+            event.preventDefault();
+            const namaUser = document.getElementById('tryout-nama-user').value.trim() || "Mahasiswa EduAPS";
+            const jawabanMap = {};
+            let benarLokal = 0;
+
+            const rincianHTML = [];
+
+            activeTryoutQuestions.forEach((q, idx) => {
+                const selected = document.querySelector(`input[name="tryout_q_${idx}"]:checked`);
+                const pilihIdx = selected ? parseInt(selected.value) : -1;
+                jawabanMap[q.id] = pilihIdx;
+                jawabanMap[idx] = pilihIdx;
+
+                const isCorrect = pilihIdx === q.kunci_index;
+                if (isCorrect) benarLokal++;
+
+                rincianHTML.push(`
+                    <div class="p-2.5 rounded-lg ${isCorrect ? 'bg-emerald-500/20 border border-emerald-400/30' : 'bg-rose-500/20 border border-rose-400/30'}">
+                        <div class="font-bold ${isCorrect ? 'text-emerald-300' : 'text-rose-300'}">
+                            Soal ${idx + 1}: ${isCorrect ? '✅ Benar' : `❌ Kurang Tepat (Kunci: ${q.opsi[q.kunci_index]})`}
+                        </div>
+                        <div class="text-purple-100 mt-0.5 text-[11px]">${q.pembahasan || ''}</div>
+                    </div>
+                `);
+            });
+
+            const totalSoal = activeTryoutQuestions.length;
+            let hasilData = {
+                nama_user: namaUser,
+                kategori_tryout: activeTryoutCategory,
+                jumlah_benar: benarLokal,
+                total_soal: totalSoal,
+                skor: Math.round((benarLokal / totalSoal) * 100),
+                waktu_selesai: new Date().toISOString()
+            };
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/tryout/submit`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        nama_user: namaUser,
+                        kategori: activeTryoutCategory,
+                        jawaban_user: jawabanMap
+                    })
+                });
+                if (res.ok) {
+                    hasilData = await res.json();
+                } else {
+                    localExamHistory.unshift(hasilData);
+                }
+            } catch (e) {
+                localExamHistory.unshift(hasilData);
+            }
+
+            // 15. Display Exam Results (Hasil Ujian)
+            document.getElementById('tryout-seq-indicator').textContent = `8. Start Grading → 10. Calculate Score → 11. Save Test Results → 15. Display Exam Results`;
+            document.getElementById('hasil-ujian-empty').classList.add('hidden');
+            document.getElementById('hasil-ujian-body').classList.remove('hidden');
+
+            document.getElementById('hasil-kategori-label').textContent = `Hasil Ujian: ${hasilData.kategori_tryout}`;
+            document.getElementById('hasil-peserta-label').textContent = `Peserta: ${hasilData.nama_user}`;
+            document.getElementById('hasil-skor-angka').textContent = hasilData.skor;
+            document.getElementById('hasil-detail-label').textContent = `Jawaban Benar: ${hasilData.jumlah_benar} dari ${hasilData.total_soal} soal`;
+            document.getElementById('header-last-score').textContent = `${hasilData.skor} (${hasilData.kategori_tryout})`;
+
+            const fb = document.getElementById('hasil-feedback-label');
+            if (hasilData.skor === 100) {
+                fb.textContent = "🌟 Sempurna! Penguasaan materi sangat memuaskan.";
+            } else if (hasilData.skor >= 65) {
+                fb.textContent = "👍 Bagus! Anda telah memahami konsep inti.";
+            } else {
+                fb.textContent = "💪 Pelajari kembali materi di Ruang Belajar.";
+            }
+
+            document.getElementById('hasil-pembahasan-list').innerHTML = rincianHTML.join('');
+            muatRiwayatHasilUjian();
+        }
+
+        function resetTryoutForm() {
+            const form = document.getElementById('tryout-form');
+            if (form) form.reset();
+            document.getElementById('hasil-ujian-empty').classList.remove('hidden');
+            document.getElementById('hasil-ujian-body').classList.add('hidden');
+        }
+
+        async function muatRiwayatHasilUjian() {
+            const container = document.getElementById('riwayat-hasil-container');
+            let list = [...localExamHistory];
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/tryout/hasil`);
+                if (res.ok) {
+                    list = await res.json();
+                }
+            } catch (e) {
+                // Gunakan localExamHistory
+            }
+
+            if (list.length === 0) {
+                container.innerHTML = `<p class="text-slate-400 italic py-2">Belum ada riwayat hasil ujian tersimpan.</p>`;
+                return;
+            }
+
+            container.innerHTML = list.map(item => `
+                <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                    <div>
+                        <div class="font-extrabold text-slate-800">${escapeHTML(item.kategori_tryout)} &bull; <span class="text-purple-700">${escapeHTML(item.nama_user)}</span></div>
+                        <div class="text-[10px] text-slate-400">Benar ${item.jumlah_benar}/${item.total_soal} &bull; ${new Date(item.waktu_selesai).toLocaleString('id-ID')}</div>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-lg font-black text-xs ${item.skor >= 70 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                        Skor: ${item.skor}
+                    </span>
+                </div>
+            `).join('');
+        }
+
+        // -------------------------------------------------------------------------
+        // 3. SISTEM FORUM TANYA JAWAB (Sequence: Using a Q&A Forum)
+        // -------------------------------------------------------------------------
+        async function muatForum() {
+            const listContainer = document.getElementById('forum-list-container');
+            const errorBox = document.getElementById('forum-error-box');
+            const countBadge = document.getElementById('forum-count-badge');
+            const seqStatus = document.getElementById('forum-seq-status');
+
+            seqStatus.textContent = "openForum() → getDiscussions() → fetchQuestionsAndAnswers()";
+
+            let data = [...localForumData];
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/forum`);
+                if (!response.ok) throw new Error("Gagal mengambil data");
+                data = await response.json();
+                errorBox.classList.add('hidden');
+                seqStatus.textContent = "renderDiscussions() [Terhubung Database Server]";
+                updateBackendBadge(true);
+            } catch (error) {
+                errorBox.classList.remove('hidden');
+                seqStatus.textContent = "renderDiscussions() [Mode Penyimpanan Lokal]";
+                updateBackendBadge(false);
+            }
+
+            countBadge.textContent = `${data.length} Topik`;
+
+            if (data.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="bg-white rounded-2xl p-8 text-center border border-slate-200 text-slate-400">
+                        <div class="text-4xl mb-2">💭</div>
+                        <p class="font-bold text-slate-600">Belum ada diskusi di Forum Tanya Jawab.</p>
+                        <p class="text-xs mt-1">Gunakan panel <strong>Opt [Ask a Question]</strong> di sebelah kiri untuk memulai diskusi!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            listContainer.innerHTML = data.map(item => {
+                const waktuTanya = new Date(item.waktu_dibuat).toLocaleString('id-ID');
+                const jawabanHTML = (item.jawaban_list || []).map(jwb => `
+                    <div class="bg-slate-50 rounded-xl p-3.5 border border-slate-200">
+                        <div class="flex items-center justify-between text-xs mb-1">
+                            <span class="font-extrabold text-purple-700">↪️ ${escapeHTML(jwb.nama_user)}</span>
+                            <span class="text-[11px] text-slate-400">${new Date(jwb.waktu_dijawab).toLocaleString('id-ID')}</span>
+                        </div>
+                        <p class="text-xs md:text-sm text-slate-700">${escapeHTML(jwb.isi_jawaban)}</p>
+                    </div>
+                `).join('');
+
+                return `
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 space-y-4">
+                        <div class="flex items-start justify-between gap-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-amber-400 text-slate-900 font-extrabold flex items-center justify-center text-sm shadow-sm">
+                                    ${escapeHTML(item.nama_user.charAt(0).toUpperCase())}
+                                </div>
+                                <div>
+                                    <h4 class="font-extrabold text-slate-800 text-sm">${escapeHTML(item.nama_user)}</h4>
+                                    <span class="text-[11px] text-slate-400">${waktuTanya} &bull; ID #${item.id}</span>
+                                </div>
+                            </div>
+                            <span class="text-xs bg-purple-100 text-purple-700 font-bold px-2.5 py-1 rounded-lg">
+                                ${(item.jawaban_list || []).length} Jawaban
+                            </span>
+                        </div>
+
+                        <p class="text-slate-700 text-sm md:text-base font-medium bg-slate-50 p-4 rounded-xl border border-slate-100">
+                            ${escapeHTML(item.isi_pertanyaan)}
+                        </p>
+
+                        <div class="space-y-2 pl-4 border-l-2 border-purple-200">
+                            ${jawabanHTML || '<p class="text-xs text-slate-400 italic">Belum ada jawaban. Kirim jawaban lewat form di bawah!</p>'}
+                        </div>
+
+                        <!-- Opt [Answer a Question] -->
+                        <form onsubmit="kirimJawaban(event, ${item.id})" class="pt-2 flex flex-col sm:flex-row gap-2">
+                            <input type="text" id="jawab-nama-${item.id}" required placeholder="Nama Anda" class="sm:w-1/4 px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-400 bg-slate-50">
+                            <input type="text" id="jawab-isi-${item.id}" required placeholder="Opt [Answer a Question]: inputAnswer(questionId=${item.id}, text)..." class="flex-grow px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-400 bg-slate-50">
+                            <button type="submit" class="px-4 py-2 rounded-xl bg-emerald-400 hover:bg-emerald-500 text-slate-900 font-extrabold text-xs shadow-sm transition">
+                                💬 submitAnswer
+                            </button>
+                        </form>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function kirimPertanyaan(event) {
+            event.preventDefault();
+            const nama = document.getElementById('tanya-nama').value.trim();
+            const isi = document.getElementById('tanya-isi').value.trim();
+            if (!nama || !isi) return;
+
+            document.getElementById('forum-seq-status').textContent = "submitQuestion(text) → saveNewQuestion(text) → displayNewQuestion()";
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/forum/tanya`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nama_user: nama, isi_pertanyaan: isi })
+                });
+                if (!res.ok) throw new Error("Fallback lokal");
+            } catch (err) {
+                localForumData.unshift({
+                    id: Date.now(),
+                    nama_user: nama,
+                    isi_pertanyaan: isi,
+                    waktu_dibuat: new Date().toISOString(),
+                    jawaban_list: []
+                });
+            }
+
+            document.getElementById('form-tanya').reset();
+            muatForum();
+        }
+
+        async function kirimJawaban(event, pertanyaanId) {
+            event.preventDefault();
+            const nama = document.getElementById(`jawab-nama-${pertanyaanId}`).value.trim();
+            const isi = document.getElementById(`jawab-isi-${pertanyaanId}`).value.trim();
+            if (!nama || !isi) return;
+
+            document.getElementById('forum-seq-status').textContent = `submitAnswer(${pertanyaanId}, text) → saveNewAnswer() → displayNewAnswer()`;
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/forum/jawab`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        pertanyaan_id: pertanyaanId,
+                        nama_user: nama,
+                        isi_jawaban: isi
+                    })
+                });
+                if (!res.ok) throw new Error("Fallback lokal");
+            } catch (err) {
+                const target = localForumData.find(q => q.id === pertanyaanId);
+                if (target) {
+                    target.jawaban_list.push({
+                        id: Date.now(),
+                        pertanyaan_id: pertanyaanId,
+                        nama_user: nama,
+                        isi_jawaban: isi,
+                        waktu_dijawab: new Date().toISOString()
+                    });
+                }
+            }
+
+            muatForum();
+        }
+
+        // -------------------------------------------------------------------------
+        // 4. APLIKASI PEMBUAT UML (Sequence: UML Maker Application)
+        //    Mendukung: chooseDiagramType, inputShape, relocateShape (Drag & Drop),
+        //               deleteShape, connectShapes, & requestDownload
+        // -------------------------------------------------------------------------
+        let currentUMLType = 'usecase';
+        let umlShapes = [];
+        let umlConnections = [];
+        let selectedShapeId = null;
+        let draggingShapeId = null;
+        let dragOffset = { x: 0, y: 0 };
+
+        const SHAPE_OPTIONS_BY_TYPE = {
+            usecase: [
+                { value: 'actor', label: '👤 Actor (Stick Man)' },
+                { value: 'usecase', label: '⭕ Use Case (Elips)' },
+                { value: 'boundary', label: '🔲 System Boundary (Kotak Sistem)' }
+            ],
+            sequence: [
+                { value: 'lifeline', label: '🏛️ Lifeline Object (:Object)' },
+                { value: 'actor', label: '👤 Actor Lifeline (User)' },
+                { value: 'note', label: '🗒️ Fragment / Catatan (Opt / Alt / Loop)' }
+            ],
+            activity: [
+                { value: 'start', label: '⚫ Initial Node (Start)' },
+                { value: 'activity', label: '🟦 Activity / Action State' },
+                { value: 'decision', label: '🔶 Decision / Percabangan' },
+                { value: 'end', label: '🎯 Final Node (End)' }
+            ]
+        };
+
+        function getPresetData(type) {
+            if (type === 'usecase') {
+                return {
+                    shapes: [
+                        { id: 'S1', type: 'boundary', label: 'edu Aps', x: 470, y: 240, w: 560, h: 420 },
+                        { id: 'S2', type: 'actor', label: 'User', x: 85, y: 230 },
+                        { id: 'S3', type: 'usecase', label: 'Ruang Belajar', x: 310, y: 90 },
+                        { id: 'S4', type: 'usecase', label: 'Ruang Tryout', x: 310, y: 195 },
+                        { id: 'S5', type: 'usecase', label: 'Forum Tanya Jawab', x: 310, y: 300 },
+                        { id: 'S6', type: 'usecase', label: 'Aplikasi Pembuat UML', x: 310, y: 400 },
+                        { id: 'S7', type: 'usecase', label: 'Materi 1 s/d 6', x: 610, y: 90 },
+                        { id: 'S8', type: 'usecase', label: 'Hasil Ujian', x: 610, y: 195 },
+                        { id: 'S9', type: 'usecase', label: 'Input & Jawab Pertanyaan', x: 610, y: 300 },
+                        { id: 'S10', type: 'usecase', label: 'Edit & Download UML', x: 610, y: 400 }
+                    ],
+                    connections: [
+                        { id: 'C1', from: 'S2', to: 'S3', rel: 'association', label: '' },
+                        { id: 'C2', from: 'S2', to: 'S4', rel: 'association', label: '' },
+                        { id: 'C3', from: 'S2', to: 'S5', rel: 'association', label: '' },
+                        { id: 'C4', from: 'S2', to: 'S6', rel: 'association', label: '' },
+                        { id: 'C5', from: 'S7', to: 'S3', rel: 'generalization', label: 'Materi 1..6' },
+                        { id: 'C6', from: 'S4', to: 'S8', rel: 'include', label: '<<include>>' },
+                        { id: 'C7', from: 'S9', to: 'S5', rel: 'extend', label: '<<extend>>' },
+                        { id: 'C8', from: 'S6', to: 'S10', rel: 'include', label: '<<include>>' }
+                    ]
+                };
+            } else if (type === 'sequence') {
+                return {
+                    shapes: [
+                        { id: 'S1', type: 'actor', label: 'User', x: 100, y: 75 },
+                        { id: 'S2', type: 'lifeline', label: ':Interface', x: 290, y: 75 },
+                        { id: 'S3', type: 'lifeline', label: ':Tryout & Grading', x: 500, y: 75 },
+                        { id: 'S4', type: 'lifeline', label: ':Database', x: 700, y: 75 },
+                        { id: 'S5', type: 'note', label: '1: Selects Tryout & Answer Questions', x: 290, y: 185 },
+                        { id: 'S6', type: 'note', label: '8: Submit Answers -> 10: Calculate Score', x: 500, y: 265 },
+                        { id: 'S7', type: 'note', label: '11: Save Test Results -> 15: Hasil Ujian', x: 500, y: 350 }
+                    ],
+                    connections: [
+                        { id: 'C1', from: 'S1', to: 'S2', rel: 'flow', label: '1: Selects Tryout()' },
+                        { id: 'C2', from: 'S2', to: 'S3', rel: 'flow', label: '2: Request Questions()' },
+                        { id: 'C3', from: 'S3', to: 'S4', rel: 'flow', label: '3: Fetch & Save Results()' },
+                        { id: 'C4', from: 'S6', to: 'S7', rel: 'return', label: '14: Exam Results & Score' }
+                    ]
+                };
+            } else {
+                // Activity Diagram
+                return {
+                    shapes: [
+                        { id: 'S1', type: 'start', label: 'Start', x: 410, y: 55 },
+                        { id: 'S2', type: 'activity', label: 'Pilih Ruang Belajar / Tryout', x: 410, y: 135 },
+                        { id: 'S3', type: 'decision', label: 'Mode?', x: 410, y: 230 },
+                        { id: 'S4', type: 'activity', label: 'Baca Materi 1 - 6', x: 200, y: 320 },
+                        { id: 'S5', type: 'activity', label: 'Kerjakan Tryout & Lihat Hasil Ujian', x: 610, y: 320 },
+                        { id: 'S6', type: 'end', label: 'End', x: 410, y: 425 }
+                    ],
+                    connections: [
+                        { id: 'C1', from: 'S1', to: 'S2', rel: 'flow', label: '' },
+                        { id: 'C2', from: 'S2', to: 'S3', rel: 'flow', label: '' },
+                        { id: 'C3', from: 'S3', to: 'S4', rel: 'flow', label: '[Belajar]' },
+                        { id: 'C4', from: 'S3', to: 'S5', rel: 'flow', label: '[Tryout / UAS]' },
+                        { id: 'C5', from: 'S4', to: 'S6', rel: 'flow', label: '' },
+                        { id: 'C6', from: 'S5', to: 'S6', rel: 'flow', label: '' }
+                    ]
+                };
+            }
+        }
+
+        function chooseDiagramType(type) {
+            currentUMLType = type;
+            ['usecase', 'sequence', 'activity'].forEach(t => {
+                const btn = document.getElementById(`btn-uml-${t}`);
+                if (t === type) {
+                    btn.className = "sub-btn-active px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm border border-slate-200 transition flex items-center gap-1.5";
+                } else {
+                    btn.className = "px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition flex items-center gap-1.5";
+                }
+            });
+
+            const titles = {
+                usecase: "KANVAS: USE CASE DIAGRAM",
+                sequence: "KANVAS: SEQUENCE DIAGRAM",
+                activity: "KANVAS: ACTIVITY DIAGRAM"
+            };
+            document.getElementById('uml-canvas-title').textContent = titles[type];
+
+            // Populate shape type dropdown
+            const typeSelect = document.getElementById('uml-input-type');
+            typeSelect.innerHTML = SHAPE_OPTIONS_BY_TYPE[type].map(o => `<option value="${o.value}">${o.label}</option>`).join('');
+
+            loadPresetDiagram();
+            logUMLAction(`chooseDiagramType('${type}') → initializeCanvas('${type}')`);
+        }
+
+        function loadPresetDiagram() {
+            const preset = getPresetData(currentUMLType);
+            umlShapes = JSON.parse(JSON.stringify(preset.shapes));
+            umlConnections = JSON.parse(JSON.stringify(preset.connections));
+            selectedShapeId = umlShapes.length > 0 ? umlShapes[0].id : null;
+            renderUpdatedView();
+        }
+
+        function clearCanvas() {
+            umlShapes = [];
+            umlConnections = [];
+            selectedShapeId = null;
+            renderUpdatedView();
+            logUMLAction(`initializeCanvas('${currentUMLType}') [Kanvas Dikosongkan]`);
+        }
+
+        function handleInputShape() {
+            const type = document.getElementById('uml-input-type').value;
+            const labelInput = document.getElementById('uml-input-label');
+            const label = labelInput.value.trim() || `${type.toUpperCase()} Baru`;
+
+            const newId = `S${Date.now().toString().slice(-4)}`;
+            const x = 220 + Math.floor(Math.random() * 340);
+            const y = 120 + Math.floor(Math.random() * 220);
+
+            const shapeObj = { id: newId, type, label, x, y };
+            if (type === 'boundary') {
+                shapeObj.w = 340;
+                shapeObj.h = 260;
+            }
+
+            umlShapes.push(shapeObj);
+            selectedShapeId = newId;
+            labelInput.value = '';
+            renderUpdatedView();
+            logUMLAction(`inputShape('${type}', '${label}') → updateCanvasData() → showUpdatedDiagram()`);
+        }
+
+        function handleConnectShapes() {
+            const fromId = document.getElementById('uml-conn-from').value;
+            const toId = document.getElementById('uml-conn-to').value;
+            const rel = document.getElementById('uml-conn-rel').value;
+            const customLabel = document.getElementById('uml-conn-label').value.trim();
+
+            if (!fromId || !toId || fromId === toId) {
+                alert("Pilih dua shape yang berbeda untuk dihubungkan.");
+                return;
+            }
+
+            let label = customLabel;
+            if (!label) {
+                if (rel === 'include') label = '<<include>>';
+                if (rel === 'extend') label = '<<extend>>';
+            }
+
+            umlConnections.push({
+                id: `C${Date.now().toString().slice(-4)}`,
+                from: fromId,
+                to: toId,
+                rel,
+                label
+            });
+
+            document.getElementById('uml-conn-label').value = '';
+            renderUpdatedView();
+            logUMLAction(`connectShapes('${fromId}', '${toId}', '${rel}') → renderUpdatedView()`);
+        }
+
+        function handleRelocateFromInput() {
+            if (!selectedShapeId) return;
+            const target = umlShapes.find(s => s.id === selectedShapeId);
+            if (!target) return;
+
+            const nx = parseInt(document.getElementById('uml-coord-x').value) || target.x;
+            const ny = parseInt(document.getElementById('uml-coord-y').value) || target.y;
+            target.x = Math.max(40, Math.min(780, nx));
+            target.y = Math.max(40, Math.min(440, ny));
+
+            renderUpdatedView();
+            logUMLAction(`relocateShape('${selectedShapeId}', {x:${target.x}, y:${target.y}}) → showUpdatedDiagram()`);
+        }
+
+        function handleDeleteSelectedShape() {
+            if (!selectedShapeId) return;
+            const deletedId = selectedShapeId;
+            umlShapes = umlShapes.filter(s => s.id !== deletedId);
+            umlConnections = umlConnections.filter(c => c.from !== deletedId && c.to !== deletedId);
+            selectedShapeId = umlShapes.length > 0 ? umlShapes[0].id : null;
+
+            renderUpdatedView();
+            logUMLAction(`deleteShape('${deletedId}') → updateCanvasData() → showUpdatedDiagram()`);
+        }
+
+        function handleDeleteLastConnection() {
+            if (umlConnections.length === 0) return;
+            const removed = umlConnections.pop();
+            renderUpdatedView();
+            logUMLAction(`deleteConnection('${removed.id}') → renderUpdatedView()`);
+        }
+
+        function onSelectShapeDropdown() {
+            selectedShapeId = document.getElementById('uml-selected-shape').value;
+            renderUpdatedView();
+        }
+
+        function syncUMLInspectorDropdowns() {
+            const selDropdown = document.getElementById('uml-selected-shape');
+            const fromDropdown = document.getElementById('uml-conn-from');
+            const toDropdown = document.getElementById('uml-conn-to');
+
+            const optionsHTML = umlShapes.map(s => `<option value="${s.id}">[${s.id}] ${escapeHTML(s.label)} (${s.type})</option>`).join('');
+            selDropdown.innerHTML = optionsHTML || '<option value="">(Tidak ada shape)</option>';
+            fromDropdown.innerHTML = optionsHTML || '<option value="">-</option>';
+            toDropdown.innerHTML = optionsHTML || '<option value="">-</option>';
+
+            if (selectedShapeId && umlShapes.some(s => s.id === selectedShapeId)) {
+                selDropdown.value = selectedShapeId;
+                const activeObj = umlShapes.find(s => s.id === selectedShapeId);
+                document.getElementById('uml-coord-x').value = Math.round(activeObj.x);
+                document.getElementById('uml-coord-y').value = Math.round(activeObj.y);
+            } else if (umlShapes.length > 0) {
+                selectedShapeId = umlShapes[0].id;
+                selDropdown.value = selectedShapeId;
+                document.getElementById('uml-coord-x').value = Math.round(umlShapes[0].x);
+                document.getElementById('uml-coord-y').value = Math.round(umlShapes[0].y);
+            } else {
+                document.getElementById('uml-coord-x').value = '';
+                document.getElementById('uml-coord-y').value = '';
+            }
+
+            if (umlShapes.length > 1) {
+                toDropdown.selectedIndex = 1;
+            }
+        }
+
+        function renderUpdatedView() {
+            syncUMLInspectorDropdowns();
+            const svg = document.getElementById('uml-interactive-svg');
+            if (!svg) return;
+
+            const defs = `
+                <defs>
+                    <marker id="arrow-solid" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+                        <polygon points="0 0, 10 4, 0 8" fill="#334155"/>
+                    </marker>
+                    <marker id="arrow-open" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+                        <polyline points="1 1, 9 4, 1 7" fill="none" stroke="#4f46e5" stroke-width="1.8"/>
+                    </marker>
+                    <marker id="arrow-generalization" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto">
+                        <polygon points="0 1, 11 5, 0 9" fill="#ffffff" stroke="#334155" stroke-width="1.8"/>
+                    </marker>
+                </defs>
+            `;
+
+            // Render Boundaries first so they stay in the background
+            const boundaries = umlShapes.filter(s => s.type === 'boundary');
+            const foregroundShapes = umlShapes.filter(s => s.type !== 'boundary');
+
+            const boundarySVG = boundaries.map(s => renderShapeNode(s)).join('');
+
+            // Lifeline vertical dashed lines for Sequence Diagram
+            const lifelineVerticals = foregroundShapes
+                .filter(s => currentUMLType === 'sequence' && (s.type === 'lifeline' || s.type === 'actor'))
+                .map(s => `<line x1="${s.x}" y1="${s.y + 28}" x2="${s.x}" y2="445" stroke="#94a3b8" stroke-width="1.8" stroke-dasharray="6,5"/>`)
+                .join('');
+
+            // Render Connections
+            const connSVG = umlConnections.map(c => {
+                const s1 = umlShapes.find(s => s.id === c.from);
+                const s2 = umlShapes.find(s => s.id === c.to);
+                if (!s1 || !s2) return '';
+
+                const isDashed = c.rel === 'include' || c.rel === 'extend' || c.rel === 'return';
+                let marker = '';
+                if (c.rel === 'include' || c.rel === 'extend' || c.rel === 'return') marker = 'url(#arrow-open)';
+                else if (c.rel === 'generalization') marker = 'url(#arrow-generalization)';
+                else if (c.rel === 'flow') marker = 'url(#arrow-solid)';
+
+                const mx = (s1.x + s2.x) / 2;
+                const my = (s1.y + s2.y) / 2;
+
+                return `
+                    <g>
+                        <line x1="${s1.x}" y1="${s1.y}" x2="${s2.x}" y2="${s2.y}"
+                            stroke="${isDashed ? '#4f46e5' : '#334155'}"
+                            stroke-width="2"
+                            ${isDashed ? 'stroke-dasharray="5,4"' : ''}
+                            ${marker ? `marker-end="${marker}"` : ''}/>
+                        ${c.label ? `
+                            <rect x="${mx - 48}" y="${my - 18}" width="96" height="16" rx="4" fill="#ffffff" opacity="0.9"/>
+                            <text x="${mx}" y="${my - 7}" text-anchor="middle" font-family="sans-serif" font-size="10" font-weight="bold" fill="#4338ca">${escapeHTML(c.label)}</text>
+                        ` : ''}
+                    </g>
+                `;
+            }).join('');
+
+            const nodesSVG = foregroundShapes.map(s => renderShapeNode(s)).join('');
+
+            svg.innerHTML = defs + boundarySVG + lifelineVerticals + connSVG + nodesSVG;
+        }
+
+        function renderShapeNode(s) {
+            const isSelected = s.id === selectedShapeId;
+            const selClass = isSelected ? 'uml-node uml-node-selected' : 'uml-node';
+            const strokeColor = isSelected ? '#7c3aed' : '#334155';
+
+            if (s.type === 'boundary') {
+                const w = s.w || 420;
+                const h = s.h || 320;
+                return `
+                    <g class="${selClass}" data-shape-id="${s.id}" onmousedown="startDragShape(evt, '${s.id}')">
+                        <rect x="${s.x - w/2}" y="${s.y - h/2}" width="${w}" height="${h}" rx="10" fill="#fefce8" fill-opacity="0.7" stroke="${strokeColor}" stroke-width="2"/>
+                        <text x="${s.x + w/2 - 16}" y="${s.y - h/2 + 22}" text-anchor="end" font-family="sans-serif" font-size="13" font-weight="bold" fill="#1e293b">${escapeHTML(s.label)}</text>
+                    </g>
+                `;
+            }
+
+            if (s.type === 'actor') {
+                return `
+                    <g class="${selClass}" data-shape-id="${s.id}" onmousedown="startDragShape(evt, '${s.id}')">
+                        <circle cx="${s.x}" cy="${s.y - 22}" r="12" fill="#fde68a" stroke="${strokeColor}" stroke-width="2"/>
+                        <line x1="${s.x}" y1="${s.y - 10}" x2="${s.x}" y2="${s.y + 18}" stroke="${strokeColor}" stroke-width="2.2"/>
+                        <line x1="${s.x - 18}" y1="${s.y}" x2="${s.x + 18}" y2="${s.y}" stroke="${strokeColor}" stroke-width="2.2"/>
+                        <line x1="${s.x}" y1="${s.y + 18}" x2="${s.x - 14}" y2="${s.y + 40}" stroke="${strokeColor}" stroke-width="2.2"/>
+                        <line x1="${s.x}" y1="${s.y + 18}" x2="${s.x + 14}" y2="${s.y + 40}" stroke="${strokeColor}" stroke-width="2.2"/>
+                        <text x="${s.x}" y="${s.y + 56}" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="bold" fill="#0f172a">${escapeHTML(s.label)}</text>
+                    </g>
+                `;
+            }
+
+            if (s.type === 'usecase') {
+                return `
+                    <g class="${selClass}" data-shape-id="${s.id}" onmousedown="startDragShape(evt, '${s.id}')">
+                        <ellipse cx="${s.x}" cy="${s.y}" rx="82" ry="26" fill="#e0f2fe" stroke="${isSelected ? '#7c3aed' : '#0284c7'}" stroke-width="2"/>
+                        <text x="${s.x}" y="${s.y + 4}" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="bold" fill="#0f172a">${escapeHTML(s.label)}</text>
+                    </g>
+                `;
+            }
+
+            if (s.type === 'lifeline') {
+                return `
+                    <g class="${selClass}" data-shape-id="${s.id}" onmousedown="startDragShape(evt, '${s.id}')">
+                        <rect x="${s.x - 65}" y="${s.y - 20}" width="130" height="40" rx="6" fill="#dbeafe" stroke="${isSelected ? '#7c3aed' : '#1d4ed8'}" stroke-width="2"/>
+                        <text x="${s.x}" y="${s.y + 4}" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="bold" fill="#1e3a8a" text-decoration="underline">${escapeHTML(s.label)}</text>
+                    </g>
+                `;
+            }
+
+            if (s.type === 'note') {
+                return `
+                    <g class="${selClass}" data-shape-id="${s.id}" onmousedown="startDragShape(evt, '${s.id}')">
+                        <rect x="${s.x - 110}" y="${s.y - 18}" width="220" height="36" rx="6" fill="#f3e8ff" stroke="${isSelected ? '#7c3aed' : '#9333ea'}" stroke-width="1.8"/>
+                        <text x="${s.x}" y="${s.y + 4}" text-anchor="middle" font-family="sans-serif" font-size="10.5" font-weight="bold" fill="#581c87">${escapeHTML(s.label)}</text>
+                    </g>
+                `;
+            }
+
+            if (s.type === 'start') {
+                return `
+                    <g class="${selClass}" data-shape-id="${s.id}" onmousedown="startDragShape(evt, '${s.id}')">
+                        <circle cx="${s.x}" cy="${s.y}" r="14" fill="#0f172a" stroke="${strokeColor}" stroke-width="2"/>
+                        <text x="${s.x}" y="${s.y - 20}" text-anchor="middle" font-family="sans-serif" font-size="10" font-weight="bold" fill="#334155">${escapeHTML(s.label)}</text>
+                    </g>
+                `;
+            }
+
+            if (s.type === 'end') {
+                return `
+                    <g class="${selClass}" data-shape-id="${s.id}" onmousedown="startDragShape(evt, '${s.id}')">
+                        <circle cx="${s.x}" cy="${s.y}" r="16" fill="#ffffff" stroke="#0f172a" stroke-width="2.2"/>
+                        <circle cx="${s.x}" cy="${s.y}" r="10" fill="#0f172a"/>
+                        <text x="${s.x}" y="${s.y + 30}" text-anchor="middle" font-family="sans-serif" font-size="10" font-weight="bold" fill="#334155">${escapeHTML(s.label)}</text>
+                    </g>
+                `;
+            }
+
+            if (s.type === 'decision') {
+                return `
+                    <g class="${selClass}" data-shape-id="${s.id}" onmousedown="startDragShape(evt, '${s.id}')">
+                        <polygon points="${s.x},${s.y - 28} ${s.x + 45},${s.y} ${s.x},${s.y + 28} ${s.x - 45},${s.y}" fill="#fef08a" stroke="${isSelected ? '#7c3aed' : '#ca8a04'}" stroke-width="2"/>
+                        <text x="${s.x}" y="${s.y + 4}" text-anchor="middle" font-family="sans-serif" font-size="10" font-weight="bold" fill="#713f12">${escapeHTML(s.label)}</text>
+                    </g>
+                `;
+            }
+
+            // Default: activity box
+            return `
+                <g class="${selClass}" data-shape-id="${s.id}" onmousedown="startDragShape(evt, '${s.id}')">
+                    <rect x="${s.x - 95}" y="${s.y - 22}" width="190" height="44" rx="16" fill="#dcfce7" stroke="${isSelected ? '#7c3aed' : '#16a34a'}" stroke-width="2"/>
+                    <text x="${s.x}" y="${s.y + 4}" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="bold" fill="#14532d">${escapeHTML(s.label)}</text>
+                </g>
+            `;
+        }
+
+        // Drag & Drop pada Kanvas SVG (relocateShape)
+        function getSVGPoint(evt) {
+            const svg = document.getElementById('uml-interactive-svg');
+            const pt = svg.createSVGPoint();
+            pt.x = evt.clientX;
+            pt.y = evt.clientY;
+            return pt.matrixTransform(svg.getScreenCTM().inverse());
+        }
+
+        function startDragShape(evt, shapeId) {
+            evt.stopPropagation();
+            selectedShapeId = shapeId;
+            draggingShapeId = shapeId;
+            const target = umlShapes.find(s => s.id === shapeId);
+            if (!target) return;
+
+            const cursor = getSVGPoint(evt);
+            dragOffset.x = cursor.x - target.x;
+            dragOffset.y = cursor.y - target.y;
+            renderUpdatedView();
+        }
+
+        window.addEventListener('mousemove', evt => {
+            if (!draggingShapeId) return;
+            const target = umlShapes.find(s => s.id === draggingShapeId);
+            if (!target) return;
+
+            const cursor = getSVGPoint(evt);
+            target.x = Math.max(40, Math.min(780, Math.round(cursor.x - dragOffset.x)));
+            target.y = Math.max(40, Math.min(440, Math.round(cursor.y - dragOffset.y)));
+            renderUpdatedView();
+        });
+
+        window.addEventListener('mouseup', () => {
+            if (draggingShapeId) {
+                const moved = umlShapes.find(s => s.id === draggingShapeId);
+                if (moved) {
+                    logUMLAction(`relocateShape('${moved.id}', {x:${moved.x}, y:${moved.y}}) → showUpdatedDiagram()`);
+                }
+                draggingShapeId = null;
+            }
+        });
+
+        function logUMLAction(msg) {
+            const el = document.getElementById('uml-action-log');
+            if (el) el.textContent = msg;
+        }
+
+        // requestDownload(format) -> generateFile -> saveFile -> triggerFileDownload
+        async function requestDownload() {
+            const format = document.getElementById('uml-download-format').value;
+            const svgEl = document.getElementById('uml-interactive-svg');
+            if (!svgEl) return;
+
+            const clonedSvg = svgEl.cloneNode(true);
+            clonedSvg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+            clonedSvg.setAttribute("width", "820");
+            clonedSvg.setAttribute("height", "480");
+            const svgString = new XMLSerializer().serializeToString(clonedSvg);
+
+            logUMLAction(`requestDownload('${format}') → generateFile() → saveFile(FileStorage) → triggerFileDownload()`);
+
+            // Simpan ke File Storage Backend (jika aktif)
+            try {
+                await fetch(`${API_BASE_URL}/api/uml/save`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        judul_diagram: `eduAps_${currentUMLType}`,
+                        tipe_diagram: currentUMLType,
+                        format_file: format,
+                        data_json: JSON.stringify({ shapes: umlShapes, connections: umlConnections }),
+                        konten_svg: svgString
+                    })
+                });
+            } catch (e) {
+                // Tetap lanjutkan download lokal
+            }
+
+            if (format === 'svg') {
+                const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+                triggerBlobDownload(blob, `eduAps_${currentUMLType}_diagram.svg`);
+            } else {
+                const img = new Image();
+                const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+                const url = URL.createObjectURL(svgBlob);
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 1640;
+                    canvas.height = 960;
+                    const ctx = canvas.getContext('2d');
+                    ctx.fillStyle = '#f8fafc';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    URL.revokeObjectURL(url);
+                    canvas.toBlob(pngBlob => {
+                        triggerBlobDownload(pngBlob, `eduAps_${currentUMLType}_diagram.png`);
+                    }, 'image/png');
+                };
+                img.src = url;
+            }
+        }
+
+        function triggerBlobDownload(blob, filename) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // -------------------------------------------------------------------------
+        // UTILITAS UMUM
+        // -------------------------------------------------------------------------
+        function updateBackendBadge(isOnline) {
+            const badge = document.getElementById('backend-badge');
+            if (!badge) return;
+            if (isOnline) {
+                badge.textContent = "Backend & DB Connected";
+                badge.className = "text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200";
+            } else {
+                badge.textContent = "Interactive Mode (Local DB)";
+                badge.className = "text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200";
+            }
+        }
+
+        function escapeHTML(str) {
+            return String(str || '').replace(/[&<>'"]/g, tag => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+            }[tag]));
+        }
+
+        // Inisialisasi saat aplikasi dibuka
+        window.addEventListener('DOMContentLoaded', () => {
+            openRuangBelajar();
+            chooseDiagramType('usecase');
+        });
+    </script>
+</body>
+</html>
