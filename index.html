@@ -389,6 +389,13 @@
                     <span id="theme-toggle-icon" class="text-base leading-none">🌙</span>
                     <span id="theme-toggle-text" class="hidden md:inline">Mode Gelap</span>
                 </button>
+
+                <!-- Tombol Masuk / Profil User -->
+                <div id="auth-container">
+                    <button onclick="openLoginModal()" id="btn-login-trigger" class="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-extrabold text-xs sm:text-sm shadow-md transition transform hover:-translate-y-0.5 flex items-center gap-1.5">
+                        <span>👤</span> <span>Masuk</span>
+                    </button>
+                </div>
             </div>
         </div>
     </header>
@@ -845,6 +852,79 @@
             <div>Belajar Materi &bull; Latihan Tryout &bull; Diskusi Kelas &bull; Studio Pembuat UML</div>
         </div>
     </footer>
+
+    <!-- ========================================================================= -->
+    <!-- MODAL LOGIN FORM                                                          -->
+    <!-- ========================================================================= -->
+    <div id="login-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-opacity duration-300" onclick="if(event.target === this) closeLoginModal()">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl max-w-md w-full p-6 sm:p-8 relative transform transition-all duration-300" onclick="event.stopPropagation()">
+            <!-- Tombol Tutup (X) -->
+            <button onclick="closeLoginModal()" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 flex items-center justify-center font-bold text-sm transition">
+                ✕
+            </button>
+
+            <!-- Header Modal -->
+            <div class="text-center mb-6">
+                <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-tr from-purple-600 via-indigo-500 to-amber-400 flex items-center justify-center text-white font-extrabold text-2xl shadow-lg mb-3">
+                    EA
+                </div>
+                <h3 class="text-2xl font-extrabold text-slate-800 dark:text-white">Masuk ke edu Aps</h3>
+                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Masukkan kredensial akun Anda untuk mengakses seluruh fitur pembelajaran.</p>
+            </div>
+
+            <!-- Pesan Notifikasi Sukses / Info -->
+            <div id="login-alert" class="hidden mb-4 p-3 rounded-xl text-xs font-semibold"></div>
+
+            <!-- Form Login -->
+            <form id="form-login" onsubmit="handleLoginSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Email / Nama Pengguna / NIM</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            📧
+                        </span>
+                        <input type="text" id="login-username" required placeholder="nama@kampus.ac.id atau nama pengguna" class="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Kata Sandi</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            🔒
+                        </span>
+                        <input type="password" id="login-password" required placeholder="Masukkan kata sandi Anda" class="w-full pl-10 pr-11 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 transition">
+                        <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-sm">
+                            <span id="password-toggle-icon">👁️</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-1">
+                    <label class="flex items-center space-x-2 cursor-pointer select-none">
+                        <input type="checkbox" id="login-remember" class="w-4 h-4 rounded text-purple-600 focus:ring-purple-500 border-slate-300 dark:border-slate-700">
+                        <span>Ingat saya</span>
+                    </label>
+                    <a href="javascript:void(0)" onclick="alert('Silakan hubungi administrator sistem untuk mereset kata sandi Anda.')" class="text-purple-600 dark:text-purple-400 font-bold hover:underline">
+                        Lupa kata sandi?
+                    </a>
+                </div>
+
+                <button type="submit" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-extrabold text-sm shadow-md transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                    <span>🚀</span> <span>Masuk Sekarang</span>
+                </button>
+
+                <div class="relative my-3 text-center">
+                    <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-200 dark:border-slate-800"></div></div>
+                    <span class="relative bg-white dark:bg-slate-900 px-3 text-[11px] text-slate-400 uppercase font-semibold">Atau</span>
+                </div>
+
+                <button type="button" onclick="handleGuestLogin()" class="w-full py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs transition flex items-center justify-center gap-2">
+                    <span>🎓</span> <span>Lanjut sebagai Tamu (Mahasiswa)</span>
+                </button>
+            </form>
+        </div>
+    </div>
 
     <!-- ========================================================================= -->
     <!-- JAVASCRIPT: LOGIKA 4 SISTEM UTAMA SESUAI SEQUENCE DIAGRAM                 -->
@@ -2105,9 +2185,107 @@
             }[tag]));
         }
 
+        // -------------------------------------------------------------------------
+        // 6. SISTEM AUTENTIKASI & FORM LOGIN
+        // -------------------------------------------------------------------------
+        function openLoginModal() {
+            const modal = document.getElementById('login-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                const userInput = document.getElementById('login-username');
+                if (userInput) userInput.focus();
+            }
+        }
+
+        function closeLoginModal() {
+            const modal = document.getElementById('login-modal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function togglePasswordVisibility() {
+            const pwd = document.getElementById('login-password');
+            const icon = document.getElementById('password-toggle-icon');
+            if (!pwd) return;
+            if (pwd.type === 'password') {
+                pwd.type = 'text';
+                if (icon) icon.textContent = '🙈';
+            } else {
+                pwd.type = 'password';
+                if (icon) icon.textContent = '👁️';
+            }
+        }
+
+        function handleLoginSubmit(event) {
+            event.preventDefault();
+            const usernameInput = document.getElementById('login-username').value.trim();
+            if (!usernameInput) return;
+
+            const displayName = usernameInput.includes('@') ? usernameInput.split('@')[0] : usernameInput;
+            localStorage.setItem('eduaps_user', displayName);
+
+            showAlertLogin('Berhasil masuk! Selamat belajar.', 'success');
+            setTimeout(() => {
+                closeLoginModal();
+                checkLoginState();
+            }, 600);
+        }
+
+        function handleGuestLogin() {
+            localStorage.setItem('eduaps_user', 'Mahasiswa');
+            showAlertLogin('Masuk sebagai Tamu (Mahasiswa).', 'info');
+            setTimeout(() => {
+                closeLoginModal();
+                checkLoginState();
+            }, 500);
+        }
+
+        function handleLogout() {
+            if (confirm('Apakah Anda yakin ingin keluar dari akun?')) {
+                localStorage.removeItem('eduaps_user');
+                checkLoginState();
+            }
+        }
+
+        function showAlertLogin(msg, type) {
+            const alertBox = document.getElementById('login-alert');
+            if (!alertBox) return;
+            alertBox.textContent = msg;
+            alertBox.className = type === 'success' 
+                ? 'mb-4 p-3 rounded-xl text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200'
+                : 'mb-4 p-3 rounded-xl text-xs font-semibold bg-indigo-100 text-indigo-800 border border-indigo-200';
+            alertBox.classList.remove('hidden');
+        }
+
+        function checkLoginState() {
+            const authContainer = document.getElementById('auth-container');
+            if (!authContainer) return;
+            const currentUser = localStorage.getItem('eduaps_user');
+
+            if (currentUser) {
+                authContainer.innerHTML = `
+                    <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-1 pl-2.5 rounded-2xl shadow-sm">
+                        <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-purple-600 to-amber-400 text-white font-bold text-xs flex items-center justify-center">
+                            ${escapeHTML(currentUser.charAt(0).toUpperCase())}
+                        </div>
+                        <span class="text-xs font-bold text-slate-800 dark:text-slate-200 max-w-[110px] truncate">${escapeHTML(currentUser)}</span>
+                        <button onclick="handleLogout()" title="Keluar dari akun" class="text-xs text-rose-500 hover:text-rose-700 dark:hover:text-rose-400 font-bold p-1 px-2 rounded-xl hover:bg-white dark:hover:bg-slate-700 transition">
+                            🚪 Keluar
+                        </button>
+                    </div>
+                `;
+            } else {
+                authContainer.innerHTML = `
+                    <button onclick="openLoginModal()" id="btn-login-trigger" class="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-extrabold text-xs sm:text-sm shadow-md transition transform hover:-translate-y-0.5 flex items-center gap-1.5">
+                        <span>👤</span> <span>Masuk</span>
+                    </button>
+                `;
+            }
+        }
+
         // Inisialisasi saat aplikasi dibuka
         window.addEventListener('DOMContentLoaded', () => {
             syncThemeUI();
+            checkLoginState();
             initInteractiveAbstractBg();
             openRuangBelajar();
             chooseDiagramType('usecase');
