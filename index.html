@@ -6,12 +6,28 @@
     <title>EduAPS - Platform Belajar, Tryout, Forum & Aplikasi Pembuat UML</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class'
+        };
+        // Inisialisasi tema lebih awal agar tidak flicker
+        (function() {
+            const savedTheme = localStorage.getItem('eduaps_theme');
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
     <!-- Google Fonts: Plus Jakarta Sans -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: background-color 0.35s ease, color 0.35s ease;
+            overflow-x: hidden;
+        }
         .tab-active {
-            background: linear-gradient(135deg, #7c3aed, #4f46e5);
+            background: linear-gradient(135deg, #7c3aed, #4f46e5) !important;
             color: white !important;
             box-shadow: 0 8px 20px -4px rgba(124, 58, 237, 0.45);
         }
@@ -26,6 +42,11 @@
             background-color: #f8fafc;
             background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
             background-size: 20px 20px;
+            transition: background-color 0.35s ease, background-image 0.35s ease;
+        }
+        html.dark .svg-canvas-grid {
+            background-color: #0b1120;
+            background-image: radial-gradient(#334155 1px, transparent 1px);
         }
         .uml-node {
             cursor: grab;
@@ -37,14 +58,299 @@
         .uml-node-selected {
             filter: drop-shadow(0 0 6px rgba(124, 58, 237, 0.75));
         }
+
+        /* =====================================================================
+           INTERACTIVE ABSTRACT GRAPHIC SHAPES BACKGROUND
+           Saat di-hover: menjadi BESAR (scale up) & menjadi GELAP (darken)
+           ===================================================================== */
+        #abstract-bg-container {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        .abstract-shape {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: auto;
+            cursor: pointer;
+            user-select: none;
+            will-change: transform, background, filter, box-shadow, opacity;
+            transition:
+                background 0.35s ease,
+                background-color 0.35s ease,
+                border-color 0.35s ease,
+                box-shadow 0.4s ease,
+                filter 0.35s ease,
+                opacity 0.35s ease;
+            opacity: 0.74;
+            backdrop-filter: blur(2px);
+        }
+
+        /* Variasi Warna Awal (Light Mode: Cerah / Pastel Transparan) */
+        .shape-theme-purple {
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.24), rgba(99, 102, 241, 0.20));
+            border: 2px solid rgba(139, 92, 246, 0.32);
+            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.15);
+            color: rgba(109, 40, 217, 0.45);
+        }
+        .shape-theme-amber {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.26), rgba(245, 158, 11, 0.18));
+            border: 2px solid rgba(245, 158, 11, 0.35);
+            box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.15);
+            color: rgba(180, 83, 9, 0.45);
+        }
+        .shape-theme-indigo {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.24), rgba(56, 189, 248, 0.20));
+            border: 2px solid rgba(99, 102, 241, 0.32);
+            box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.15);
+            color: rgba(67, 56, 202, 0.45);
+        }
+        .shape-theme-emerald {
+            background: linear-gradient(135deg, rgba(52, 211, 153, 0.24), rgba(20, 184, 166, 0.18));
+            border: 2px solid rgba(16, 185, 129, 0.32);
+            box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.15);
+            color: rgba(4, 120, 87, 0.45);
+        }
+        .shape-theme-rose {
+            background: linear-gradient(135deg, rgba(244, 114, 182, 0.24), rgba(192, 132, 252, 0.20));
+            border: 2px solid rgba(236, 72, 153, 0.30);
+            box-shadow: 0 10px 25px -5px rgba(236, 72, 153, 0.15);
+            color: rgba(190, 24, 93, 0.45);
+        }
+
+        /* Variasi Warna Awal pada Dark Mode */
+        html.dark .shape-theme-purple {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.22), rgba(79, 70, 229, 0.16));
+            border-color: rgba(167, 139, 250, 0.30);
+            color: rgba(196, 181, 253, 0.45);
+        }
+        html.dark .shape-theme-amber {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.20), rgba(217, 119, 6, 0.15));
+            border-color: rgba(251, 191, 36, 0.30);
+            color: rgba(253, 230, 138, 0.45);
+        }
+        html.dark .shape-theme-indigo {
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.20), rgba(99, 102, 241, 0.16));
+            border-color: rgba(125, 211, 252, 0.28);
+            color: rgba(186, 230, 253, 0.45);
+        }
+        html.dark .shape-theme-emerald {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.20), rgba(6, 182, 212, 0.16));
+            border-color: rgba(110, 231, 183, 0.28);
+            color: rgba(167, 243, 208, 0.45);
+        }
+        html.dark .shape-theme-rose {
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.20), rgba(168, 85, 247, 0.16));
+            border-color: rgba(249, 168, 212, 0.28);
+            color: rgba(251, 207, 232, 0.45);
+        }
+
+        /* Bentuk Geometri & Abstrak */
+        .shape-blob-1 { border-radius: 62% 38% 46% 54% / 60% 44% 56% 40%; }
+        .shape-blob-2 { border-radius: 38% 62% 63% 37% / 41% 44% 56% 59%; }
+        .shape-blob-3 { border-radius: 49% 51% 33% 67% / 66% 35% 65% 34%; }
+        .shape-ring {
+            border-radius: 9999px;
+            border-width: 14px !important;
+            background: transparent !important;
+        }
+        .shape-pill { border-radius: 9999px; --base-rot: -20deg; }
+        .shape-diamond { border-radius: 22px; --base-rot: 45deg; }
+        .shape-hexagon {
+            clip-path: polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%);
+        }
+        .shape-triangle {
+            clip-path: polygon(50% 6%, 96% 92%, 4% 92%);
+        }
+        .shape-octagon {
+            clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+        }
+        .shape-starburst {
+            clip-path: polygon(50% 0%, 64% 25%, 93% 15%, 78% 42%, 100% 64%, 72% 72%, 79% 100%, 50% 82%, 21% 100%, 28% 72%, 0% 64%, 22% 42%, 7% 15%, 36% 25%);
+        }
+
+        /* EFEK INTERAKTIF SAAT HOVER: JADI BESAR (Scale Up via Orbit Engine) & JADI GELAP (Darken) */
+        .abstract-shape:hover,
+        .abstract-shape.is-hovered {
+            opacity: 0.95;
+            z-index: 2;
+            background: linear-gradient(135deg, #0f172a, #1e1b4b, #311042) !important;
+            border-color: #7c3aed !important;
+            color: #facc15 !important;
+            box-shadow:
+                0 24px 48px -8px rgba(15, 23, 42, 0.55),
+                0 0 28px rgba(124, 58, 237, 0.45),
+                inset 0 0 18px rgba(250, 204, 21, 0.18) !important;
+        }
+        .abstract-shape.shape-ring:hover,
+        .abstract-shape.shape-ring.is-hovered {
+            background: rgba(15, 23, 42, 0.78) !important;
+            border-color: #1e1b4b !important;
+            box-shadow:
+                0 20px 44px rgba(15, 23, 42, 0.6),
+                0 0 24px rgba(250, 204, 21, 0.5) !important;
+        }
+        html.dark .abstract-shape:hover,
+        html.dark .abstract-shape.is-hovered {
+            background: linear-gradient(135deg, #020617, #090d16, #1e1b4b) !important;
+            border-color: #facc15 !important;
+            box-shadow:
+                0 26px 54px -6px rgba(0, 0, 0, 0.85),
+                0 0 32px rgba(250, 204, 21, 0.35),
+                0 0 14px rgba(139, 92, 246, 0.55) !important;
+        }
+        .abstract-shape.is-clicked {
+            filter: brightness(0.75) saturate(1.4);
+        }
+
+        /* Label mini di dalam bentuk abstrak saat di-hover (tetap tegak lurus saat shape berputar) */
+        .abstract-shape .shape-tag {
+            opacity: 0;
+            transform: rotate(var(--counter-rot, 0deg)) scale(0.7);
+            transition: opacity 0.25s ease;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: #f8fafc;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+            pointer-events: none;
+        }
+        .abstract-shape:hover .shape-tag,
+        .abstract-shape.is-hovered .shape-tag {
+            opacity: 1;
+            transform: rotate(var(--counter-rot, 0deg)) scale(1);
+        }
+
+        /* =====================================================================
+           DARK MODE GLOBAL OVERRIDES (Mencakup elemen statis & dinamis JS/DB)
+           ===================================================================== */
+        html.dark body {
+            background-color: #090d16 !important;
+            color: #e2e8f0 !important;
+        }
+        html.dark header {
+            background-color: rgba(15, 23, 42, 0.88) !important;
+            border-color: #1e293b !important;
+        }
+        html.dark footer {
+            background-color: rgba(15, 23, 42, 0.92) !important;
+            border-color: #1e293b !important;
+        }
+        html.dark .bg-white {
+            background-color: rgba(30, 41, 59, 0.88) !important;
+            backdrop-filter: blur(10px);
+        }
+        html.dark .bg-slate-50 {
+            background-color: rgba(15, 23, 42, 0.78) !important;
+        }
+        html.dark .bg-slate-100 {
+            background-color: rgba(30, 41, 59, 0.95) !important;
+        }
+        html.dark .bg-slate-200 {
+            background-color: #334155 !important;
+        }
+        html.dark .border-slate-100 {
+            border-color: #1e293b !important;
+        }
+        html.dark .border-slate-200,
+        html.dark .border-slate-300 {
+            border-color: #334155 !important;
+        }
+        html.dark .text-slate-800 {
+            color: #f1f5f9 !important;
+        }
+        html.dark .text-slate-700 {
+            color: #cbd5e1 !important;
+        }
+        html.dark .text-slate-600 {
+            color: #94a3b8 !important;
+        }
+        html.dark .text-slate-500 {
+            color: #94a3b8 !important;
+        }
+        html.dark .text-purple-700 {
+            color: #c084fc !important;
+        }
+        html.dark .text-purple-600 {
+            color: #c084fc !important;
+        }
+        html.dark .bg-purple-100,
+        html.dark .bg-purple-50 {
+            background-color: rgba(126, 34, 206, 0.22) !important;
+            border-color: rgba(168, 85, 247, 0.35) !important;
+        }
+        html.dark .bg-indigo-50,
+        html.dark .bg-indigo-100 {
+            background-color: rgba(67, 56, 202, 0.25) !important;
+            border-color: rgba(99, 102, 241, 0.35) !important;
+            color: #a5b4fc !important;
+        }
+        html.dark .bg-blue-50 {
+            background-color: rgba(30, 58, 138, 0.28) !important;
+            border-color: rgba(59, 130, 246, 0.35) !important;
+        }
+        html.dark .bg-amber-50 {
+            background-color: rgba(120, 53, 15, 0.28) !important;
+            border-color: rgba(245, 158, 11, 0.35) !important;
+        }
+        html.dark .bg-emerald-50 {
+            background-color: rgba(6, 78, 59, 0.28) !important;
+            border-color: rgba(16, 185, 129, 0.35) !important;
+        }
+        html.dark .bg-rose-50 {
+            background-color: rgba(136, 19, 55, 0.28) !important;
+            border-color: rgba(244, 63, 94, 0.35) !important;
+            color: #fda4af !important;
+        }
+        html.dark .from-amber-50.to-yellow-50 {
+            background-image: linear-gradient(to bottom right, rgba(120, 53, 15, 0.28), rgba(113, 63, 18, 0.22)) !important;
+            border-color: rgba(245, 158, 11, 0.35) !important;
+        }
+        html.dark input,
+        html.dark select,
+        html.dark textarea {
+            background-color: #0f172a !important;
+            color: #f1f5f9 !important;
+            border-color: #334155 !important;
+        }
+        html.dark input::placeholder,
+        html.dark textarea::placeholder {
+            color: #64748b !important;
+        }
+        html.dark label:hover {
+            background-color: rgba(30, 41, 59, 0.9) !important;
+        }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col relative">
 
     <!-- ========================================================================= -->
-    <!-- TOP NAVBAR (4 USE CASE UTAMA EDU APS)                                     -->
+    <!-- INTERACTIVE ORBITING ABSTRACT SHAPES BACKGROUND                           -->
     <!-- ========================================================================= -->
-    <header class="bg-white/95 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200 shadow-sm">
+    <div id="abstract-bg-container" aria-hidden="true">
+        <div class="abstract-shape shape-blob-1 shape-theme-purple w-40 h-40"></div>
+        <div class="abstract-shape shape-hexagon shape-theme-amber w-32 h-32"></div>
+        <div class="abstract-shape shape-ring shape-theme-indigo w-28 h-28"></div>
+        <div class="abstract-shape shape-triangle shape-theme-rose w-32 h-32"></div>
+        <div class="abstract-shape shape-diamond shape-theme-emerald w-28 h-28"></div>
+        <div class="abstract-shape shape-blob-2 shape-theme-purple w-44 h-44"></div>
+        <div class="abstract-shape shape-starburst shape-theme-amber w-28 h-28"></div>
+        <div class="abstract-shape shape-octagon shape-theme-rose w-32 h-32"></div>
+        <div class="abstract-shape shape-pill shape-theme-emerald w-36 h-20"></div>
+        <div class="abstract-shape shape-blob-3 shape-theme-indigo w-36 h-36"></div>
+        <div class="abstract-shape shape-ring shape-theme-purple w-32 h-32"></div>
+        <div class="abstract-shape shape-hexagon shape-theme-emerald w-24 h-24"></div>
+        <div class="abstract-shape shape-diamond shape-theme-indigo w-24 h-24"></div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- TOP NAVBAR                                                                -->
+    <!-- ========================================================================= -->
+    <header class="bg-white/95 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200 shadow-sm transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap justify-between items-center gap-4">
             <!-- Brand Identity -->
             <div class="flex items-center space-x-3">
@@ -53,74 +359,73 @@
                 </div>
                 <div>
                     <div class="flex items-center gap-2">
-                        <span class="text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-purple-700 to-indigo-600">edu Aps</span>
-                        <span id="backend-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200">System Ready</span>
+                        <span class="text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-purple-700 to-indigo-600 dark:from-purple-400 dark:to-amber-300">edu Aps</span>
                     </div>
-                    <span class="block text-xs text-slate-500 font-medium">Analisis &amp; Perancangan Sistem Informasi</span>
+                    <span class="block text-xs text-slate-500 font-medium">Media Pembelajaran Analisis &amp; Perancangan Sistem Informasi</span>
                 </div>
             </div>
 
-            <!-- 4 Main Navigation Tabs Sesuai Use Case Diagram -->
-            <nav class="flex flex-wrap gap-1.5 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
-                <button onclick="switchMainTab('belajar')" id="nav-belajar" class="tab-active px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 flex items-center gap-1.5">
-                    <span>📚</span> <span>Ruang Belajar</span>
+            <!-- Navigation + Dark/Light Mode Switcher -->
+            <div class="flex flex-wrap items-center gap-2.5">
+                <nav class="flex flex-wrap gap-1.5 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
+                    <button onclick="switchMainTab('belajar')" id="nav-belajar" class="tab-active px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 flex items-center gap-1.5">
+                        <span>📚</span> <span>Ruang Belajar</span>
+                    </button>
+                    <button onclick="switchMainTab('tryout')" id="nav-tryout" class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:bg-white transition-all duration-200 flex items-center gap-1.5">
+                        <span>📝</span> <span>Ruang Tryout</span>
+                    </button>
+                    <button onclick="switchMainTab('forum')" id="nav-forum" class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:bg-white transition-all duration-200 flex items-center gap-1.5">
+                        <span>💬</span> <span>Forum Tanya Jawab</span>
+                    </button>
+                    <button onclick="switchMainTab('uml')" id="nav-uml" class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:bg-white transition-all duration-200 flex items-center gap-1.5">
+                        <span>📐</span> <span>Pembuat UML</span>
+                    </button>
+                </nav>
+
+                <!-- Tombol Toggle Mode Gelap / Terang -->
+                <button onclick="toggleDarkMode()" id="theme-toggle-btn"
+                    title="Ganti Mode Gelap / Terang"
+                    class="px-3.5 py-2.5 rounded-2xl border border-slate-200 bg-slate-100 hover:bg-amber-400/20 text-slate-700 font-extrabold text-xs sm:text-sm transition-all duration-300 flex items-center gap-2 shadow-sm">
+                    <span id="theme-toggle-icon" class="text-base leading-none">🌙</span>
+                    <span id="theme-toggle-text" class="hidden md:inline">Mode Gelap</span>
                 </button>
-                <button onclick="switchMainTab('tryout')" id="nav-tryout" class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:bg-white transition-all duration-200 flex items-center gap-1.5">
-                    <span>📝</span> <span>Ruang Tryout</span>
-                </button>
-                <button onclick="switchMainTab('forum')" id="nav-forum" class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:bg-white transition-all duration-200 flex items-center gap-1.5">
-                    <span>💬</span> <span>Forum Tanya Jawab</span>
-                </button>
-                <button onclick="switchMainTab('uml')" id="nav-uml" class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:bg-white transition-all duration-200 flex items-center gap-1.5">
-                    <span>📐</span> <span>Aplikasi Pembuat UML</span>
-                </button>
-            </nav>
+            </div>
         </div>
     </header>
 
     <!-- ========================================================================= -->
     <!-- MAIN CONTENT CONTAINER                                                    -->
     <!-- ========================================================================= -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-7 flex-grow w-full space-y-6">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-7 flex-grow w-full space-y-6 relative z-10">
 
         <!-- ===================================================================== -->
         <!-- TAB 1: RUANG BELAJAR (Materi 1 - Materi 6)                            -->
-        <!-- Sequence Diagram: Mengakses Ruang Belajar (Accessing Learning Room)   -->
         <!-- ===================================================================== -->
         <section id="section-belajar" class="space-y-6">
-            <!-- Header Banner & Sequence Indicator -->
+            <!-- Header Banner -->
             <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 rounded-2xl p-6 text-white shadow-lg flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <div>
                     <div class="flex flex-wrap items-center gap-2">
-                        <span class="bg-amber-400 text-slate-900 text-[11px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Use Case: Ruang Belajar</span>
-                        <span class="bg-white/20 text-white text-[11px] font-semibold px-3 py-1 rounded-full">Spesialisasi: Materi 1 s/d Materi 6</span>
+                        <span class="bg-amber-400 text-slate-900 text-[11px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Modul Pembelajaran</span>
+                        <span class="bg-white/20 text-white text-[11px] font-semibold px-3 py-1 rounded-full">Materi 1 s/d Materi 6</span>
                     </div>
                     <h1 class="text-2xl md:text-3xl font-extrabold mt-2">Ruang Belajar Mahasiswa</h1>
-                    <p class="text-indigo-100 text-xs sm:text-sm mt-1">Pilih daftar materi pertemuan untuk memuat detail bahan kajian Analisis &amp; Perancangan Sistem dari Database.</p>
-                </div>
-
-                <!-- Live Sequence Log Box -->
-                <div class="bg-slate-900/40 backdrop-blur-sm border border-white/20 rounded-xl p-3.5 text-xs min-w-[280px]">
-                    <div class="text-amber-300 font-bold uppercase tracking-wider text-[10px] mb-1">🔄 Alur Sequence: Mengakses Ruang Belajar</div>
-                    <div id="belajar-seq-log" class="font-mono text-[11px] text-indigo-100 space-y-0.5">
-                        <div>1. Pilih Ruang Belajar() &rarr; :Interface</div>
-                        <div>1.2 Get Materi &amp; Ruang Belajar() &rarr; :Database</div>
-                    </div>
+                    <p class="text-indigo-100 text-xs sm:text-sm mt-1">Pilih pertemuan di bawah ini untuk mempelajari materi Analisis &amp; Perancangan Sistem Informasi secara terstruktur.</p>
                 </div>
             </div>
 
-            <!-- Pemilih Materi 1 - 6 (1.4 Tampilkan Daftar Materi()) -->
+            <!-- Pemilih Materi 1 - 6 -->
             <div>
                 <div class="flex items-center justify-between mb-3">
-                    <h2 class="text-sm font-extrabold text-slate-700 uppercase tracking-wider">1.4 Daftar Materi Pembelajaran (Materi 1 – 6)</h2>
-                    <span class="text-xs text-slate-500">Klik materi untuk menjalankan <code class="text-purple-600 font-bold">2.1 Request Detail Materi(materiId)</code></span>
+                    <h2 class="text-sm font-extrabold text-slate-700 uppercase tracking-wider">Pilih Materi Pertemuan</h2>
+                    <span class="text-xs text-slate-500">Klik salah satu kartu materi untuk membaca pembahasan</span>
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3" id="belajar-selector">
                     <!-- Di-render via JS -->
                 </div>
             </div>
 
-            <!-- Konten Detail Materi (2.4 Tampilkan Konten Materi()) -->
+            <!-- Konten Detail Materi -->
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                 <div class="lg:col-span-8 bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200">
                     <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4 mb-5">
@@ -141,33 +446,33 @@
 
                     <div class="mt-8 pt-5 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
                         <div class="text-xs text-slate-500">
-                            Sudah selesai mempelajari <strong id="belajar-footer-kode" class="text-slate-700">Materi 1</strong>? Uji pemahamanmu di Ruang Tryout!
+                            Sudah selesai mempelajari <strong id="belajar-footer-kode" class="text-slate-700">Materi 1</strong>? Yuk uji pemahamanmu!
                         </div>
                         <button onclick="lanjutKeTryoutDariBelajar()" class="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-500 text-slate-900 font-extrabold text-xs sm:text-sm shadow-sm transition transform hover:-translate-y-0.5 flex items-center gap-2">
-                            <span>🎯 Kerjakan Tryout Materi Ini</span>
+                            <span>🎯 Latihan Soal Materi Ini</span>
                             <span>&rarr;</span>
                         </button>
                     </div>
                 </div>
 
-                <!-- Panel Samping: Skema Sequence Ruang Belajar & Navigasi Cepat -->
+                <!-- Panel Samping: Panduan Belajar & Navigasi Cepat -->
                 <div class="lg:col-span-4 space-y-4">
                     <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
-                        <span class="text-[11px] font-extrabold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md">Arsitektur Sistem</span>
-                        <h3 class="text-base font-extrabold text-slate-800 mt-2">Lifeline Ruang Belajar</h3>
-                        <p class="text-xs text-slate-500 mt-1 mb-4">Interaksi objek sesuai Sequence Diagram <em>Mengakses Ruang Belajar</em>:</p>
+                        <span class="text-[11px] font-extrabold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md">Panduan Belajar</span>
+                        <h3 class="text-base font-extrabold text-slate-800 mt-2">Tips Menguasai Materi</h3>
+                        <p class="text-xs text-slate-500 mt-1 mb-4">Ikuti langkah belajar berikut agar pemahaman lebih maksimal:</p>
                         <ol class="space-y-2.5 text-xs text-slate-600">
                             <li class="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
                                 <span class="w-5 h-5 rounded-full bg-purple-600 text-white font-bold flex items-center justify-center text-[10px] shrink-0">1</span>
-                                <div><strong>User &rarr; :Interface:</strong> Memilih menu <code class="text-purple-700">Pilih Ruang Belajar()</code></div>
+                                <div><strong>Pahami Konsep Inti:</strong> Baca ringkasan dan poin penting pada setiap pertemuan (Materi 1 hingga Materi 6).</div>
                             </li>
                             <li class="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-                                <span class="w-5 h-5 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center text-[10px] shrink-0">1.2</span>
-                                <div><strong>:System Control &rarr; :Database:</strong> Memanggil <code class="text-indigo-700">Get Materi &amp; Ruang Belajar()</code> dan menampilkan daftar Materi 1–6.</div>
+                                <span class="w-5 h-5 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center text-[10px] shrink-0">2</span>
+                                <div><strong>Uji Pemahaman:</strong> Kerjakan kuis latihan per bab di menu <strong>Ruang Tryout</strong> untuk melihat skor dan pembahasan.</div>
                             </li>
                             <li class="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-                                <span class="w-5 h-5 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-[10px] shrink-0">2.2</span>
-                                <div><strong>Pilih Materi(materiId):</strong> Mengambil <code class="text-blue-700">Get Detail Materi(materiId)</code> dari Database dan merender <code class="text-blue-700">Tampilkan Konten Materi()</code>.</div>
+                                <span class="w-5 h-5 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-[10px] shrink-0">3</span>
+                                <div><strong>Praktik Visual:</strong> Coba buat diagram langsung di menu <strong>Pembuat UML</strong> atau berdiskusi di <strong>Forum Tanya Jawab</strong>.</div>
                             </li>
                         </ol>
                     </div>
@@ -177,9 +482,9 @@
                             <span class="text-xl">🎓</span>
                             <h4 class="font-extrabold text-slate-800 text-sm">Siap Evaluasi Akhir?</h4>
                         </div>
-                        <p class="text-xs text-slate-600">Selain tryout per bab (Materi 1–6), tersedia pula <strong>Soal UAS</strong> di Ruang Tryout yang terhubung langsung dengan <strong>&laquo;include&raquo; Hasil Ujian</strong>.</p>
+                        <p class="text-xs text-slate-600">Selain latihan soal per bab (Materi 1–6), tersedia pula simulasi <strong>Soal UAS</strong> lengkap dengan penilaian dan pembahasan langsung.</p>
                         <button onclick="bukaTryoutKategori('Soal UAS')" class="w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 font-bold text-xs transition">
-                            🚀 Buka Simulasi Soal UAS
+                            🚀 Mulai Simulasi Soal UAS
                         </button>
                     </div>
                 </div>
@@ -187,37 +492,34 @@
         </section>
 
         <!-- ===================================================================== -->
-        <!-- TAB 2: RUANG TRYOUT & HASIL UJIAN (Materi 1 - 6 + Soal UAS)           -->
-        <!-- Sequence Diagram: Taking a Tryout & Viewing Exam Results              -->
+        <!-- TAB 2: RUANG TRYOUT & HASIL EVALUASI (Materi 1 - 6 + Soal UAS)        -->
         <!-- ===================================================================== -->
         <section id="section-tryout" class="hidden space-y-6">
-            <!-- Banner Info Use Case & Sequence -->
+            <!-- Banner Info -->
             <div class="bg-gradient-to-r from-purple-700 via-indigo-700 to-slate-900 rounded-2xl p-6 text-white shadow-lg flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <div>
                     <div class="flex flex-wrap items-center gap-2">
-                        <span class="bg-amber-400 text-slate-900 text-[11px] font-extrabold px-3 py-1 rounded-full uppercase">Use Case: Ruang Tryout</span>
-                        <span class="bg-emerald-400/20 text-emerald-300 border border-emerald-400/30 text-[11px] font-bold px-3 py-1 rounded-full">&laquo;include&raquo; Hasil Ujian</span>
+                        <span class="bg-amber-400 text-slate-900 text-[11px] font-extrabold px-3 py-1 rounded-full uppercase">Latihan &amp; Evaluasi</span>
+                        <span class="bg-emerald-400/20 text-emerald-300 border border-emerald-400/30 text-[11px] font-bold px-3 py-1 rounded-full">Skor &amp; Pembahasan Langsung</span>
                     </div>
-                    <h1 class="text-2xl md:text-3xl font-extrabold mt-2">Ruang Tryout &amp; Evaluasi Hasil Ujian</h1>
-                    <p class="text-purple-100 text-xs sm:text-sm mt-1">Pilih kategori Tryout (<strong>Materi 1 – 6</strong> atau <strong>Soal UAS</strong>). Jawaban akan dinilai oleh <em>Grading System</em> dan disimpan ke <em>Database</em>.</p>
+                    <h1 class="text-2xl md:text-3xl font-extrabold mt-2">Ruang Tryout &amp; Evaluasi</h1>
+                    <p class="text-purple-100 text-xs sm:text-sm mt-1">Pilih kategori latihan soal (<strong>Materi 1 – 6</strong> atau <strong>Soal UAS</strong>), jawab pertanyaan, dan lihat hasil pembahasannya secara instan.</p>
                 </div>
 
                 <div class="flex items-center gap-3 bg-white/10 backdrop-blur-sm px-4 py-3 rounded-xl border border-white/15 shrink-0">
                     <span class="text-3xl">🏆</span>
                     <div>
-                        <div class="text-[11px] text-purple-200 uppercase font-semibold">Hasil Ujian Terakhir</div>
-                        <div id="header-last-score" class="text-lg font-extrabold text-amber-300">Belum Ujian</div>
+                        <div class="text-[11px] text-purple-200 uppercase font-semibold">Skor Terakhir Anda</div>
+                        <div id="header-last-score" class="text-lg font-extrabold text-amber-300">Belum Mengerjakan</div>
                     </div>
                 </div>
             </div>
 
-            <!-- 1. Selects Tryout: Materi 1..6 & Soal UAS -->
+            <!-- Pilih Kategori Tryout -->
             <div>
                 <div class="flex items-center justify-between mb-3">
-                    <h2 class="text-sm font-extrabold text-slate-700 uppercase tracking-wider">1. Pilih Kategori Tryout (Materi 1 – 6 &amp; Soal UAS)</h2>
-                    <span id="tryout-seq-indicator" class="text-xs font-mono text-purple-700 bg-purple-50 px-2.5 py-1 rounded-lg border border-purple-200">
-                        1. Selects Tryout &rarr; 3. Fetch Questions (Database)
-                    </span>
+                    <h2 class="text-sm font-extrabold text-slate-700 uppercase tracking-wider">Pilih Kategori Soal</h2>
+                    <span class="text-xs text-slate-500">Pilih bab materi atau evaluasi akhir (UAS)</span>
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3" id="tryout-selector">
                     <!-- Di-render via JS -->
@@ -229,13 +531,10 @@
                 <div class="lg:col-span-7 bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
                     <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-4 mb-5">
                         <div>
-                            <span class="text-[11px] font-extrabold bg-amber-400 text-slate-900 px-2.5 py-1 rounded-md uppercase">6. Display the Test</span>
-                            <h3 id="tryout-title" class="text-xl font-extrabold text-slate-800 mt-1.5">Lembar Ujian Tryout</h3>
+                            <span class="text-[11px] font-extrabold bg-amber-400 text-slate-900 px-2.5 py-1 rounded-md uppercase">Lembar Latihan</span>
+                            <h3 id="tryout-title" class="text-xl font-extrabold text-slate-800 mt-1.5">Soal Tryout</h3>
                         </div>
-                        <div class="w-full sm:w-auto">
-                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Nama Peserta Ujian</label>
-                            <input type="text" id="tryout-nama-user" value="Mahasiswa EduAPS" placeholder="Nama Anda" class="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                        </div>
+                        <span class="text-xs text-slate-500 font-medium">Pilih satu jawaban yang paling tepat</span>
                     </div>
 
                     <form id="tryout-form" onsubmit="submitTryoutAnswers(event)" class="space-y-5">
@@ -245,73 +544,57 @@
 
                         <div class="pt-3 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
                             <span class="text-xs text-slate-500">
-                                Alur: <strong>7. Submit Answers</strong> &rarr; <strong>10. Calculate Score</strong> &rarr; <strong>11. Save Test Results</strong>
+                                Pastikan semua soal telah terjawab sebelum mengirim.
                             </span>
                             <button type="submit" class="w-full sm:w-auto py-3 px-6 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-sm shadow-md transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
-                                <span>✅ Submit Jawaban &amp; Lihat Hasil Ujian</span>
+                                <span>✅ Selesai &amp; Lihat Nilai</span>
                             </button>
                         </div>
                     </form>
                 </div>
 
-                <!-- Kolom Kanan: <<include>> Hasil Ujian & Riwayat Database (5 Kolom) -->
-                <div class="lg:col-span-5 space-y-5">
-                    <!-- 15. Display Exam Results (Hasil Ujian) -->
+                <!-- Kolom Kanan: Kartu Nilai & Pembahasan (5 Kolom, Clean Tanpa Riwayat User Lain) -->
+                <div class="lg:col-span-5 space-y-5 sticky top-24">
                     <div id="hasil-ujian-card" class="bg-gradient-to-br from-purple-700 via-indigo-700 to-slate-900 text-white rounded-2xl p-6 shadow-xl border border-purple-400/30">
                         <div class="flex items-center justify-between border-b border-white/15 pb-3 mb-4">
                             <div class="flex items-center gap-2.5">
                                 <span class="text-2xl">📊</span>
                                 <div>
-                                    <span class="text-[10px] uppercase tracking-wider bg-emerald-400 text-slate-900 px-2 py-0.5 rounded font-extrabold">&laquo;include&raquo; Hasil Ujian</span>
-                                    <h4 class="font-extrabold text-base mt-0.5">15. Display Exam Results</h4>
+                                    <span class="text-[10px] uppercase tracking-wider bg-emerald-400 text-slate-900 px-2 py-0.5 rounded font-extrabold">Evaluasi</span>
+                                    <h4 class="font-extrabold text-base mt-0.5">Ringkasan Nilai &amp; Pembahasan</h4>
                                 </div>
                             </div>
                             <button onclick="resetTryoutForm()" class="text-xs bg-white/15 hover:bg-white/25 px-3 py-1.5 rounded-lg font-semibold transition">
-                                Ulangi Ujian
+                                🔄 Ulangi Soal
                             </button>
                         </div>
 
-                        <div id="hasil-ujian-empty" class="py-6 text-center text-purple-200 text-xs space-y-2">
+                        <div id="hasil-ujian-empty" class="py-8 text-center text-purple-200 text-xs space-y-2">
                             <div class="text-3xl">📝</div>
-                            <p class="font-bold text-white text-sm">Belum Ada Jawaban yang Disubmit</p>
-                            <p>Kerjakan soal di sebelah kiri lalu klik tombol <strong>Submit Jawaban</strong> untuk menjalankan <em>Grading System</em> dan menampilkan <strong>Hasil Ujian</strong>.</p>
+                            <p class="font-bold text-white text-sm">Belum Ada Jawaban yang Dikirim</p>
+                            <p>Jawab seluruh pertanyaan di sebelah kiri lalu klik tombol <strong>Selesai &amp; Lihat Nilai</strong> untuk melihat skor dan pembahasan soal.</p>
                         </div>
 
                         <div id="hasil-ujian-body" class="hidden space-y-4">
                             <div class="flex items-center justify-between bg-white/10 p-4 rounded-xl border border-white/10">
                                 <div>
                                     <p id="hasil-kategori-label" class="text-amber-300 text-xs font-extrabold uppercase">Kategori</p>
-                                    <p id="hasil-peserta-label" class="text-xs text-purple-200 mt-0.5">Peserta: Mahasiswa</p>
-                                    <p id="hasil-feedback-label" class="text-sm font-bold mt-2">Evaluasi selesai</p>
-                                    <p id="hasil-detail-label" class="text-xs text-purple-200 mt-0.5">Benar: 0 / 0 soal</p>
+                                    <p id="hasil-feedback-label" class="text-sm font-bold mt-1.5">Evaluasi selesai</p>
+                                    <p id="hasil-detail-label" class="text-xs text-purple-200 mt-1">Benar: 0 / 0 soal</p>
                                 </div>
                                 <div class="bg-amber-400 text-slate-900 w-20 h-20 rounded-2xl flex flex-col items-center justify-center shadow-md shrink-0">
-                                    <span class="text-[10px] font-extrabold uppercase">Skor</span>
+                                    <span class="text-[10px] font-extrabold uppercase">Nilai</span>
                                     <span id="hasil-skor-angka" class="text-3xl font-black">100</span>
                                 </div>
                             </div>
 
                             <!-- Pembahasan Singkat -->
                             <div>
-                                <div class="text-xs font-bold uppercase tracking-wider text-purple-200 mb-2">Rincian Koreksi Grading System:</div>
-                                <div id="hasil-pembahasan-list" class="space-y-2 max-h-60 overflow-y-auto pr-1 text-xs">
+                                <div class="text-xs font-bold uppercase tracking-wider text-purple-200 mb-2">Pembahasan Jawaban:</div>
+                                <div id="hasil-pembahasan-list" class="space-y-2 max-h-72 overflow-y-auto pr-1 text-xs">
                                     <!-- Diisi via JS -->
                                 </div>
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- Riwayat Hasil Ujian di Database (11. Save Test Results) -->
-                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
-                        <div class="flex items-center justify-between mb-3">
-                            <div>
-                                <h4 class="text-sm font-extrabold text-slate-800">🗄️ Riwayat Hasil Ujian (Database)</h4>
-                                <p class="text-[11px] text-slate-500">Data tersimpan melalui step <code class="text-purple-600 font-bold">11. Save Test Results</code></p>
-                            </div>
-                            <button onclick="muatRiwayatHasilUjian()" class="text-xs text-purple-600 font-bold hover:underline">🔄 Refresh</button>
-                        </div>
-                        <div id="riwayat-hasil-container" class="space-y-2 max-h-64 overflow-y-auto text-xs">
-                            <!-- Di-render via JS -->
                         </div>
                     </div>
                 </div>
@@ -320,31 +603,26 @@
 
         <!-- ===================================================================== -->
         <!-- TAB 3: FORUM TANYA JAWAB                                              -->
-        <!-- Sequence Diagram: Using a Q&A Forum (Forum Tanya Jawab)               -->
         <!-- ===================================================================== -->
         <section id="section-forum" class="hidden space-y-6">
             <!-- Header Banner -->
             <div class="bg-gradient-to-r from-purple-600 via-fuchsia-600 to-indigo-600 rounded-2xl p-6 text-white shadow-lg flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <div>
                     <div class="flex flex-wrap items-center gap-2">
-                        <span class="bg-amber-400 text-slate-900 text-[11px] font-extrabold px-3 py-1 rounded-full uppercase">Use Case: Forum Tanya Jawab</span>
-                        <span class="bg-white/20 text-white text-[11px] font-semibold px-3 py-1 rounded-full">&laquo;extend&raquo; Input Pertanyaan &amp; Jawab Pertanyaan</span>
+                        <span class="bg-amber-400 text-slate-900 text-[11px] font-extrabold px-3 py-1 rounded-full uppercase">Ruang Diskusi</span>
+                        <span class="bg-white/20 text-white text-[11px] font-semibold px-3 py-1 rounded-full">Tanya Jawab Seputar Materi</span>
                     </div>
-                    <h1 class="text-2xl md:text-3xl font-extrabold mt-2">Forum Diskusi &amp; Tanya Jawab Kelas</h1>
-                    <p class="text-purple-100 text-xs sm:text-sm mt-1">Alur Sequence: <code class="bg-black/20 px-1.5 py-0.5 rounded">openForum() &rarr; getDiscussions() &rarr; fetchQuestionsAndAnswers() &rarr; renderDiscussions()</code></p>
-                </div>
-                <div class="bg-slate-900/35 border border-white/20 rounded-xl px-4 py-3 text-xs font-mono">
-                    <div class="text-amber-300 font-bold text-[10px] uppercase">Status Forum System</div>
-                    <div id="forum-seq-status" class="text-white mt-0.5">Menunggu koneksi database...</div>
+                    <h1 class="text-2xl md:text-3xl font-extrabold mt-2">Forum Diskusi &amp; Tanya Jawab</h1>
+                    <p class="text-purple-100 text-xs sm:text-sm mt-1">Ajukan pertanyaan seputar materi perkuliahan atau bantu jawab pertanyaan dari teman lainnya.</p>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                <!-- Kolom Kiri: Opt [Ask a Question] (4 Kolom) -->
+                <!-- Kolom Kiri: Form Buat Pertanyaan (4 Kolom) -->
                 <div class="lg:col-span-4 bg-white rounded-2xl p-6 shadow-sm border border-slate-200 sticky top-24">
-                    <span class="bg-amber-400 text-slate-900 text-[11px] font-extrabold px-2.5 py-1 rounded-md uppercase">Opt [Ask a Question]</span>
-                    <h2 class="text-lg font-extrabold text-slate-800 mt-2">Ajukan Pertanyaan Baru</h2>
-                    <p class="text-xs text-slate-500 mt-1 mb-4">Menjalankan fungsi <code class="text-purple-600 font-bold">submitQuestion(text)</code> &rarr; <code class="text-purple-600 font-bold">saveNewQuestion(text)</code> ke Database.</p>
+                    <span class="bg-amber-400 text-slate-900 text-[11px] font-extrabold px-2.5 py-1 rounded-md uppercase">Buat Topik Baru</span>
+                    <h2 class="text-lg font-extrabold text-slate-800 mt-2">Ajukan Pertanyaan</h2>
+                    <p class="text-xs text-slate-500 mt-1 mb-4">Tulis nama dan pertanyaanmu di bawah ini untuk memulai diskusi bersama.</p>
 
                     <form id="form-tanya" onsubmit="kirimPertanyaan(event)" class="space-y-4">
                         <div>
@@ -352,33 +630,23 @@
                             <input type="text" id="tanya-nama" required placeholder="Contoh: Andi Pratama" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm bg-slate-50">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Isi Pertanyaan (<code class="text-purple-600">inputQuestion(text)</code>)</label>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Pertanyaan Anda</label>
                             <textarea id="tanya-isi" rows="4" required placeholder="Tanyakan materi seputar SDLC, PIECES, Use Case, Sequence, atau Activity Diagram..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm bg-slate-50"></textarea>
                         </div>
                         <button type="submit" class="w-full py-3 px-5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-sm shadow-md transition transform hover:-translate-y-0.5">
-                            🚀 Kirim Pertanyaan (submitQuestion)
+                            🚀 Kirim Pertanyaan
                         </button>
                     </form>
-
-                    <div class="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
-                        <span class="text-slate-400">Lifeline: <strong class="text-slate-600">Forum System &harr; DB</strong></span>
-                        <button onclick="muatForum()" class="text-purple-600 hover:underline font-bold">🔄 getDiscussions()</button>
-                    </div>
                 </div>
 
-                <!-- Kolom Kanan: Daftar Diskusi & Opt [Answer a Question] (8 Kolom) -->
+                <!-- Kolom Kanan: Daftar Diskusi (8 Kolom) -->
                 <div class="lg:col-span-8 space-y-4">
                     <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex items-center justify-between">
                         <div>
-                            <h3 class="text-base font-extrabold text-slate-800">Daftar Diskusi Tanya Jawab (<code class="text-purple-600 text-sm">renderDiscussions()</code>)</h3>
-                            <p class="text-xs text-slate-500">Setiap kartu topik mendukung aksi <code class="text-emerald-600 font-bold">Opt [Answer a Question]: submitAnswer(questionId, text)</code></p>
+                            <h3 class="text-base font-extrabold text-slate-800">Daftar Diskusi Kelas</h3>
+                            <p class="text-xs text-slate-500">Pilih topik di bawah untuk membaca pembahasan atau menambahkan jawaban</p>
                         </div>
                         <span id="forum-count-badge" class="bg-emerald-400 text-slate-900 text-xs font-extrabold px-3 py-1.5 rounded-xl">0 Topik</span>
-                    </div>
-
-                    <div id="forum-error-box" class="hidden bg-amber-50 border border-amber-300 rounded-2xl p-4 text-amber-900 text-xs space-y-1">
-                        <div class="font-extrabold text-sm">ℹ️ Mode Penyimpanan Lokal Aktif (Server FastAPI belum dijalankan)</div>
-                        <p>Anda tetap dapat mencoba fitur <strong>Ask a Question</strong> dan <strong>Answer a Question</strong> secara interaktif! Untuk terhubung ke database server, jalankan <code class="bg-amber-200 px-1.5 py-0.5 rounded font-bold">uvicorn main:app --reload</code>.</p>
                     </div>
 
                     <div id="forum-list-container" class="space-y-4">
@@ -389,8 +657,7 @@
         </section>
 
         <!-- ===================================================================== -->
-        <!-- TAB 4: APLIKASI PEMBUAT UML (Interactive UML Maker Application)       -->
-        <!-- Sequence Diagram: UML Maker Application                               -->
+        <!-- TAB 4: APLIKASI PEMBUAT UML (Interactive UML Maker)                   -->
         <!-- ===================================================================== -->
         <section id="section-uml" class="hidden space-y-6">
             <!-- Header Banner & Choose Diagram Type -->
@@ -398,14 +665,14 @@
                 <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 pb-5">
                     <div>
                         <div class="flex flex-wrap items-center gap-2">
-                            <span class="bg-purple-100 text-purple-700 text-[11px] font-extrabold px-3 py-1 rounded-full uppercase">Use Case: Aplikasi Pembuat UML</span>
-                            <span class="bg-emerald-100 text-emerald-700 text-[11px] font-extrabold px-3 py-1 rounded-full">&laquo;include&raquo; Pengeditan Diagram &amp; Download Hasil Pembuatan</span>
+                            <span class="bg-purple-100 text-purple-700 text-[11px] font-extrabold px-3 py-1 rounded-full uppercase">Studio Visual</span>
+                            <span class="bg-emerald-100 text-emerald-700 text-[11px] font-extrabold px-3 py-1 rounded-full">Drag &amp; Drop Editor</span>
                         </div>
-                        <h2 class="text-2xl font-extrabold text-slate-800 mt-2">UML Maker Application (Editor Interaktif)</h2>
-                        <p class="text-xs sm:text-sm text-slate-500">Pilih tipe diagram (<code class="text-purple-600 font-semibold">chooseDiagramType</code>), tambah/pindahkan/hapus/hubungkan shape di kanvas, lalu unduh hasilnya.</p>
+                        <h2 class="text-2xl font-extrabold text-slate-800 mt-2">Aplikasi Pembuat Diagram UML</h2>
+                        <p class="text-xs sm:text-sm text-slate-500">Pilih jenis diagram, tambahkan dan hubungkan elemen di kanvas, lalu unduh hasilnya dalam bentuk gambar.</p>
                     </div>
 
-                    <!-- alt Choose Diagram Type (Use Case / Sequence / Activity) -->
+                    <!-- Pilih Jenis Diagram (Use Case / Sequence / Activity) -->
                     <div class="flex flex-wrap gap-2">
                         <button onclick="chooseDiagramType('usecase')" id="btn-uml-usecase" class="sub-btn-active px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm border border-slate-200 transition flex items-center gap-1.5">
                             <span>👤</span> <span>Use Case Diagram</span>
@@ -422,85 +689,82 @@
                 <!-- Workspace Grid: Control Panel (Kiri 4 Kolom) & Interactive Canvas (Kanan 8 Kolom) -->
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-                    <!-- PANEL KONTROL PENGEDITAN DIAGRAM (loop Editing Diagram) -->
+                    <!-- PANEL KONTROL PENGEDITAN DIAGRAM -->
                     <div class="lg:col-span-4 space-y-4">
-                        <!-- 1. Aksi inputShape(type, label) -->
+                        <!-- 1. Tambah Elemen -->
                         <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 space-y-3">
                             <div class="flex items-center justify-between">
-                                <span class="text-[11px] font-extrabold uppercase text-purple-700 bg-purple-100 px-2.5 py-0.5 rounded">&laquo;extend&raquo; Input Shape</span>
-                                <code class="text-[10px] text-slate-500">inputShape(type, label)</code>
+                                <span class="text-[11px] font-extrabold uppercase text-purple-700 bg-purple-100 px-2.5 py-0.5 rounded">1. Tambah Elemen</span>
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-700 mb-1">Tipe Elemen / Shape</label>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Jenis Elemen</label>
                                 <select id="uml-input-type" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold bg-white focus:outline-none focus:ring-2 focus:ring-purple-500">
                                     <!-- Diisi dinamis sesuai tipe diagram -->
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-700 mb-1">Label Shape</label>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Nama / Label Elemen</label>
                                 <input type="text" id="uml-input-label" placeholder="Contoh: Mengelola Data..." class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-purple-500">
                             </div>
                             <button onclick="handleInputShape()" class="w-full py-2.5 px-4 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-xs shadow-sm transition">
-                                ➕ Tambah Shape ke Kanvas
+                                ➕ Tambahkan ke Kanvas
                             </button>
                         </div>
 
-                        <!-- 2. Aksi connectShapes(shapeId1, shapeId2, relationship) -->
+                        <!-- 2. Hubungkan Elemen -->
                         <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 space-y-3">
                             <div class="flex items-center justify-between">
-                                <span class="text-[11px] font-extrabold uppercase text-indigo-700 bg-indigo-100 px-2.5 py-0.5 rounded">Connect Shapes</span>
-                                <code class="text-[10px] text-slate-500">connectShapes(id1, id2, rel)</code>
+                                <span class="text-[11px] font-extrabold uppercase text-indigo-700 bg-indigo-100 px-2.5 py-0.5 rounded">2. Hubungkan Elemen</span>
                             </div>
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
-                                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Dari Shape (Asal)</label>
+                                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Dari Elemen</label>
                                     <select id="uml-conn-from" class="w-full px-2.5 py-2 rounded-xl border border-slate-200 text-xs bg-white"></select>
                                 </div>
                                 <div>
-                                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Ke Shape (Tujuan)</label>
+                                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Ke Elemen</label>
                                     <select id="uml-conn-to" class="w-full px-2.5 py-2 rounded-xl border border-slate-200 text-xs bg-white"></select>
                                 </div>
                             </div>
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
-                                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Jenis Relasi</label>
+                                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Jenis Garis Relasi</label>
                                     <select id="uml-conn-rel" class="w-full px-2.5 py-2 rounded-xl border border-slate-200 text-xs bg-white">
                                         <option value="association">Association / Garis Lurus</option>
-                                        <option value="include">&laquo;include&raquo; (Dashed Arrow)</option>
-                                        <option value="extend">&laquo;extend&raquo; (Dashed Arrow)</option>
-                                        <option value="generalization">Generalization (Inheritance)</option>
-                                        <option value="flow">Panah Alur / Message</option>
-                                        <option value="return">Return Message (Dashed)</option>
+                                        <option value="include">&laquo;include&raquo; (Garis Putus)</option>
+                                        <option value="extend">&laquo;extend&raquo; (Garis Putus)</option>
+                                        <option value="generalization">Generalization (Pewarisan)</option>
+                                        <option value="flow">Panah Alur / Pesan</option>
+                                        <option value="return">Pesan Balik (Garis Putus)</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Label Custom (Opsional)</label>
-                                    <input type="text" id="uml-conn-label" placeholder="Misal: 1: login()" class="w-full px-2.5 py-2 rounded-xl border border-slate-200 text-xs bg-white">
+                                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Keterangan Garis (Opsional)</label>
+                                    <input type="text" id="uml-conn-label" placeholder="Contoh: Verifikasi" class="w-full px-2.5 py-2 rounded-xl border border-slate-200 text-xs bg-white">
                                 </div>
                             </div>
                             <button onclick="handleConnectShapes()" class="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs shadow-sm transition">
-                                🔗 Hubungkan Kedua Shape
+                                🔗 Hubungkan Kedua Elemen
                             </button>
                         </div>
 
-                        <!-- 3. Aksi relocateShape(shapeId, newCoords) & deleteShape(shapeId) -->
+                        <!-- 3. Atur Posisi & Hapus -->
                         <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 space-y-3">
                             <div class="flex items-center justify-between">
-                                <span class="text-[11px] font-extrabold uppercase text-amber-800 bg-amber-200 px-2.5 py-0.5 rounded">&laquo;extend&raquo; Relokasi &amp; Delete</span>
-                                <code class="text-[10px] text-slate-500">relocate / deleteShape</code>
+                                <span class="text-[11px] font-extrabold uppercase text-amber-800 bg-amber-200 px-2.5 py-0.5 rounded">3. Atur Posisi &amp; Hapus</span>
                             </div>
-                            <p class="text-[11px] text-slate-500">💡 <strong>Tips:</strong> Anda bisa langsung <strong>klik &amp; geser (drag)</strong> shape di kanvas, atau pilih shape di bawah ini untuk memindahkan koordinat / menghapusnya:</p>
+                            <p class="text-[11px] text-slate-500">💡 <strong>Tips:</strong> Klik &amp; geser (<em>drag</em>) elemen langsung di kanvas, atau pilih elemen di bawah ini:</p>
                             <div>
-                                <label class="block text-[11px] font-bold text-slate-700 mb-1">Shape Terpilih (<code class="text-purple-600">shapeId</code>)</label>
+                                <label class="block text-[11px] font-bold text-slate-700 mb-1">Elemen Terpilih</label>
                                 <select id="uml-selected-shape" onchange="onSelectShapeDropdown()" class="w-full px-2.5 py-2 rounded-xl border border-slate-200 text-xs bg-white font-semibold"></select>
                             </div>
                             <div class="grid grid-cols-3 gap-2">
                                 <div>
-                                    <label class="block text-[10px] font-bold text-slate-600">Koordinat X</label>
+                                    <label class="block text-[10px] font-bold text-slate-600">Posisi X</label>
                                     <input type="number" id="uml-coord-x" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs bg-white">
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] font-bold text-slate-600">Koordinat Y</label>
+                                    <label class="block text-[10px] font-bold text-slate-600">Posisi Y</label>
                                     <input type="number" id="uml-coord-y" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs bg-white">
                                 </div>
                                 <div class="flex items-end">
@@ -511,7 +775,7 @@
                             </div>
                             <div class="flex gap-2 pt-1">
                                 <button onclick="handleDeleteSelectedShape()" class="flex-1 py-2 px-3 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-extrabold text-xs transition">
-                                    🗑️ Delete Shape Terpilih
+                                    🗑️ Hapus Elemen
                                 </button>
                                 <button onclick="handleDeleteLastConnection()" class="py-2 px-3 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs transition" title="Hapus garis relasi terakhir">
                                     ✂️ Hapus Garis
@@ -533,10 +797,10 @@
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <button onclick="loadPresetDiagram()" class="text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-lg border border-indigo-200 transition">
-                                        ✨ Muat Template Standar
+                                        ✨ Muat Contoh Diagram
                                     </button>
                                     <button onclick="clearCanvas()" class="text-xs bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold px-3 py-1 rounded-lg border border-rose-200 transition">
-                                        🧹 Kosongkan Kanvas
+                                        🧹 Bersihkan Kanvas
                                     </button>
                                 </div>
                             </div>
@@ -544,15 +808,15 @@
                             <!-- Interactive SVG Canvas -->
                             <div class="svg-canvas-grid rounded-xl border border-slate-300 overflow-hidden shadow-inner relative">
                                 <svg id="uml-interactive-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 480" class="w-full h-[440px] select-none">
-                                    <!-- Di-render dinamis oleh fungsi renderUpdatedView() -->
+                                    <!-- Di-render dinamis -->
                                 </svg>
                             </div>
 
-                            <!-- Bottom Bar: Sequence Log & requestDownload(format) -->
+                            <!-- Bottom Bar: Info & Download -->
                             <div class="mt-4 bg-white p-4 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
                                 <div class="text-xs space-y-0.5">
-                                    <div class="font-extrabold text-slate-700">Log Aktivitas Editor (<code class="text-purple-600">updateCanvasData &rarr; renderUpdatedView</code>):</div>
-                                    <div id="uml-action-log" class="text-slate-500 font-mono text-[11px]">openApplication() &rarr; initializeCanvas('usecase')</div>
+                                    <div class="font-extrabold text-slate-700">Status Editor:</div>
+                                    <div id="uml-action-log" class="text-slate-500 text-[11px]">Siap digunakan — Klik dan geser elemen pada kanvas untuk mengatur posisi.</div>
                                 </div>
 
                                 <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
@@ -561,7 +825,7 @@
                                         <option value="png">Format .PNG (Gambar)</option>
                                     </select>
                                     <button onclick="requestDownload()" class="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-xs sm:text-sm shadow-md transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
-                                        <span>📥 Download Hasil Pembuatan</span>
+                                        <span>📥 Unduh Diagram</span>
                                     </button>
                                 </div>
                             </div>
@@ -575,10 +839,10 @@
     </main>
 
     <!-- FOOTER -->
-    <footer class="bg-white border-t border-slate-200 py-5 mt-10">
+    <footer class="bg-white border-t border-slate-200 py-5 mt-10 relative z-10 transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500 font-medium">
-            <div>Aplikasi Edukasi <strong>edu Aps</strong> &bull; Analisis dan Perancangan Sistem Informasi</div>
-            <div>Sesuai Spesifikasi Use Case Diagram &amp; 4 Sequence Diagram Sistem</div>
+            <div><strong>edu Aps</strong> &bull; Media Pembelajaran Analisis dan Perancangan Sistem Informasi</div>
+            <div>Belajar Materi &bull; Latihan Tryout &bull; Diskusi Kelas &bull; Studio Pembuat UML</div>
         </div>
     </footer>
 
@@ -799,7 +1063,6 @@
                 openRuangBelajar();
             } else if (tabName === 'tryout') {
                 bukaTryoutKategori(activeTryoutCategory);
-                muatRiwayatHasilUjian();
             } else if (tabName === 'forum') {
                 muatForum();
             } else if (tabName === 'uml') {
@@ -808,25 +1071,16 @@
         }
 
         // -------------------------------------------------------------------------
-        // 1. SISTEM RUANG BELAJAR (Sequence: Mengakses Ruang Belajar)
+        // 1. SISTEM RUANG BELAJAR
         // -------------------------------------------------------------------------
         async function openRuangBelajar() {
-            const logEl = document.getElementById('belajar-seq-log');
-            logEl.innerHTML = `
-                <div>1: Pilih Ruang Belajar() &rarr; :Interface</div>
-                <div>1.1: Request Data Ruang Belajar() &rarr; :System Control</div>
-                <div>1.2: Get Materi &amp; Ruang Belajar() &rarr; :Database</div>
-            `;
-
             try {
                 const res = await fetch(`${API_BASE_URL}/api/ruang-belajar`);
                 if (res.ok) {
                     daftarMateriState = await res.json();
-                    updateBackendBadge(true);
                 }
             } catch (e) {
                 daftarMateriState = [...FALLBACK_MATERI];
-                updateBackendBadge(false);
             }
 
             renderDaftarMateri();
@@ -863,12 +1117,6 @@
             document.getElementById('belajar-ringkasan').textContent = detail.ringkasan || '';
             document.getElementById('belajar-content').innerHTML = detail.konten_html;
             document.getElementById('belajar-footer-kode').textContent = detail.kode;
-
-            document.getElementById('belajar-seq-log').innerHTML = `
-                <div>2: Pilih Materi (${detail.kode}) &rarr; :Interface</div>
-                <div>2.2: Get Detail Materi(materiId=${materiId}) &rarr; :Database</div>
-                <div class="text-amber-300 font-bold">2.4: Tampilkan Konten Materi() [Selesai]</div>
-            `;
         }
 
         function lanjutKeTryoutDariBelajar() {
@@ -879,7 +1127,7 @@
         }
 
         // -------------------------------------------------------------------------
-        // 2. SISTEM RUANG TRYOUT & GRADING SYSTEM (Sequence: Taking a Tryout)
+        // 2. SISTEM RUANG TRYOUT & EVALUASI
         // -------------------------------------------------------------------------
         function renderTryoutSelector() {
             const container = document.getElementById('tryout-selector');
@@ -889,7 +1137,7 @@
                 return `
                     <button onclick="bukaTryoutKategori('${kat}')"
                         class="p-3 rounded-2xl border-2 border-slate-200 bg-white hover:border-amber-400 transition-all duration-200 text-left flex flex-col justify-between ${isActive ? 'sub-btn-active' : 'text-slate-700'}">
-                        <span class="text-[10px] uppercase tracking-wider font-bold ${isUAS ? 'text-purple-700' : 'opacity-70'}">${isUAS ? 'Evaluasi Akhir' : 'Tryout Bab'}</span>
+                        <span class="text-[10px] uppercase tracking-wider font-bold ${isUAS ? 'text-purple-700' : 'opacity-70'}">${isUAS ? 'Evaluasi Akhir' : 'Latihan Bab'}</span>
                         <span class="text-sm font-extrabold mt-1">${kat}</span>
                     </button>
                 `;
@@ -900,20 +1148,17 @@
             activeTryoutCategory = kategori;
             renderTryoutSelector();
 
-            document.getElementById('tryout-seq-indicator').textContent = `1. Selects Tryout (${kategori}) → 3. Fetch Questions → 6. Display the test`;
-            document.getElementById('tryout-title').textContent = `Lembar Tryout: ${kategori}`;
+            document.getElementById('tryout-title').textContent = `Soal Latihan: ${kategori}`;
 
             try {
                 const res = await fetch(`${API_BASE_URL}/api/tryout/questions/${encodeURIComponent(kategori)}`);
                 if (res.ok) {
                     activeTryoutQuestions = await res.json();
-                    updateBackendBadge(true);
                 } else {
                     activeTryoutQuestions = FALLBACK_TRYOUT[kategori] || [];
                 }
             } catch (e) {
                 activeTryoutQuestions = FALLBACK_TRYOUT[kategori] || [];
-                updateBackendBadge(false);
             }
 
             const qContainer = document.getElementById('tryout-questions-container');
@@ -936,7 +1181,7 @@
 
         async function submitTryoutAnswers(event) {
             event.preventDefault();
-            const namaUser = document.getElementById('tryout-nama-user').value.trim() || "Mahasiswa EduAPS";
+            const namaUser = "Mahasiswa";
             const jawabanMap = {};
             let benarLokal = 0;
 
@@ -954,7 +1199,7 @@
                 rincianHTML.push(`
                     <div class="p-2.5 rounded-lg ${isCorrect ? 'bg-emerald-500/20 border border-emerald-400/30' : 'bg-rose-500/20 border border-rose-400/30'}">
                         <div class="font-bold ${isCorrect ? 'text-emerald-300' : 'text-rose-300'}">
-                            Soal ${idx + 1}: ${isCorrect ? '✅ Benar' : `❌ Kurang Tepat (Kunci: ${q.opsi[q.kunci_index]})`}
+                            Nomor ${idx + 1}: ${isCorrect ? '✅ Jawaban Benar' : `❌ Kurang Tepat (Jawaban Benar: ${q.opsi[q.kunci_index]})`}
                         </div>
                         <div class="text-purple-100 mt-0.5 text-[11px]">${q.pembahasan || ''}</div>
                     </div>
@@ -983,20 +1228,16 @@
                 });
                 if (res.ok) {
                     hasilData = await res.json();
-                } else {
-                    localExamHistory.unshift(hasilData);
                 }
             } catch (e) {
-                localExamHistory.unshift(hasilData);
+                // Gunakan hasil perhitungan lokal
             }
 
-            // 15. Display Exam Results (Hasil Ujian)
-            document.getElementById('tryout-seq-indicator').textContent = `8. Start Grading → 10. Calculate Score → 11. Save Test Results → 15. Display Exam Results`;
+            // Tampilkan Hasil Evaluasi
             document.getElementById('hasil-ujian-empty').classList.add('hidden');
             document.getElementById('hasil-ujian-body').classList.remove('hidden');
 
-            document.getElementById('hasil-kategori-label').textContent = `Hasil Ujian: ${hasilData.kategori_tryout}`;
-            document.getElementById('hasil-peserta-label').textContent = `Peserta: ${hasilData.nama_user}`;
+            document.getElementById('hasil-kategori-label').textContent = `Kategori: ${hasilData.kategori_tryout}`;
             document.getElementById('hasil-skor-angka').textContent = hasilData.skor;
             document.getElementById('hasil-detail-label').textContent = `Jawaban Benar: ${hasilData.jumlah_benar} dari ${hasilData.total_soal} soal`;
             document.getElementById('header-last-score').textContent = `${hasilData.skor} (${hasilData.kategori_tryout})`;
@@ -1007,11 +1248,10 @@
             } else if (hasilData.skor >= 65) {
                 fb.textContent = "👍 Bagus! Anda telah memahami konsep inti.";
             } else {
-                fb.textContent = "💪 Pelajari kembali materi di Ruang Belajar.";
+                fb.textContent = "💪 Yuk pelajari kembali materi di Ruang Belajar.";
             }
 
             document.getElementById('hasil-pembahasan-list').innerHTML = rincianHTML.join('');
-            muatRiwayatHasilUjian();
         }
 
         function resetTryoutForm() {
@@ -1021,59 +1261,20 @@
             document.getElementById('hasil-ujian-body').classList.add('hidden');
         }
 
-        async function muatRiwayatHasilUjian() {
-            const container = document.getElementById('riwayat-hasil-container');
-            let list = [...localExamHistory];
-            try {
-                const res = await fetch(`${API_BASE_URL}/api/tryout/hasil`);
-                if (res.ok) {
-                    list = await res.json();
-                }
-            } catch (e) {
-                // Gunakan localExamHistory
-            }
-
-            if (list.length === 0) {
-                container.innerHTML = `<p class="text-slate-400 italic py-2">Belum ada riwayat hasil ujian tersimpan.</p>`;
-                return;
-            }
-
-            container.innerHTML = list.map(item => `
-                <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200">
-                    <div>
-                        <div class="font-extrabold text-slate-800">${escapeHTML(item.kategori_tryout)} &bull; <span class="text-purple-700">${escapeHTML(item.nama_user)}</span></div>
-                        <div class="text-[10px] text-slate-400">Benar ${item.jumlah_benar}/${item.total_soal} &bull; ${new Date(item.waktu_selesai).toLocaleString('id-ID')}</div>
-                    </div>
-                    <span class="px-2.5 py-1 rounded-lg font-black text-xs ${item.skor >= 70 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
-                        Skor: ${item.skor}
-                    </span>
-                </div>
-            `).join('');
-        }
-
         // -------------------------------------------------------------------------
-        // 3. SISTEM FORUM TANYA JAWAB (Sequence: Using a Q&A Forum)
+        // 3. SISTEM FORUM TANYA JAWAB
         // -------------------------------------------------------------------------
         async function muatForum() {
             const listContainer = document.getElementById('forum-list-container');
-            const errorBox = document.getElementById('forum-error-box');
             const countBadge = document.getElementById('forum-count-badge');
-            const seqStatus = document.getElementById('forum-seq-status');
-
-            seqStatus.textContent = "openForum() → getDiscussions() → fetchQuestionsAndAnswers()";
 
             let data = [...localForumData];
             try {
                 const response = await fetch(`${API_BASE_URL}/api/forum`);
                 if (!response.ok) throw new Error("Gagal mengambil data");
                 data = await response.json();
-                errorBox.classList.add('hidden');
-                seqStatus.textContent = "renderDiscussions() [Terhubung Database Server]";
-                updateBackendBadge(true);
             } catch (error) {
-                errorBox.classList.remove('hidden');
-                seqStatus.textContent = "renderDiscussions() [Mode Penyimpanan Lokal]";
-                updateBackendBadge(false);
+                // Gunakan data lokal
             }
 
             countBadge.textContent = `${data.length} Topik`;
@@ -1083,7 +1284,7 @@
                     <div class="bg-white rounded-2xl p-8 text-center border border-slate-200 text-slate-400">
                         <div class="text-4xl mb-2">💭</div>
                         <p class="font-bold text-slate-600">Belum ada diskusi di Forum Tanya Jawab.</p>
-                        <p class="text-xs mt-1">Gunakan panel <strong>Opt [Ask a Question]</strong> di sebelah kiri untuk memulai diskusi!</p>
+                        <p class="text-xs mt-1">Gunakan formulir <strong>Ajukan Pertanyaan</strong> di sebelah kiri untuk memulai diskusi!</p>
                     </div>
                 `;
                 return;
@@ -1110,11 +1311,11 @@
                                 </div>
                                 <div>
                                     <h4 class="font-extrabold text-slate-800 text-sm">${escapeHTML(item.nama_user)}</h4>
-                                    <span class="text-[11px] text-slate-400">${waktuTanya} &bull; ID #${item.id}</span>
+                                    <span class="text-[11px] text-slate-400">${waktuTanya}</span>
                                 </div>
                             </div>
                             <span class="text-xs bg-purple-100 text-purple-700 font-bold px-2.5 py-1 rounded-lg">
-                                ${(item.jawaban_list || []).length} Jawaban
+                                ${(item.jawaban_list || []).length} Balasan
                             </span>
                         </div>
 
@@ -1123,15 +1324,15 @@
                         </p>
 
                         <div class="space-y-2 pl-4 border-l-2 border-purple-200">
-                            ${jawabanHTML || '<p class="text-xs text-slate-400 italic">Belum ada jawaban. Kirim jawaban lewat form di bawah!</p>'}
+                            ${jawabanHTML || '<p class="text-xs text-slate-400 italic">Belum ada jawaban. Jadilah yang pertama membantu menjawab!</p>'}
                         </div>
 
-                        <!-- Opt [Answer a Question] -->
+                        <!-- Form Balas Diskusi -->
                         <form onsubmit="kirimJawaban(event, ${item.id})" class="pt-2 flex flex-col sm:flex-row gap-2">
                             <input type="text" id="jawab-nama-${item.id}" required placeholder="Nama Anda" class="sm:w-1/4 px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-400 bg-slate-50">
-                            <input type="text" id="jawab-isi-${item.id}" required placeholder="Opt [Answer a Question]: inputAnswer(questionId=${item.id}, text)..." class="flex-grow px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-400 bg-slate-50">
+                            <input type="text" id="jawab-isi-${item.id}" required placeholder="Tulis jawaban atau tanggapan Anda..." class="flex-grow px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-400 bg-slate-50">
                             <button type="submit" class="px-4 py-2 rounded-xl bg-emerald-400 hover:bg-emerald-500 text-slate-900 font-extrabold text-xs shadow-sm transition">
-                                💬 submitAnswer
+                                💬 Kirim Jawaban
                             </button>
                         </form>
                     </div>
@@ -1144,8 +1345,6 @@
             const nama = document.getElementById('tanya-nama').value.trim();
             const isi = document.getElementById('tanya-isi').value.trim();
             if (!nama || !isi) return;
-
-            document.getElementById('forum-seq-status').textContent = "submitQuestion(text) → saveNewQuestion(text) → displayNewQuestion()";
 
             try {
                 const res = await fetch(`${API_BASE_URL}/api/forum/tanya`, {
@@ -1173,8 +1372,6 @@
             const nama = document.getElementById(`jawab-nama-${pertanyaanId}`).value.trim();
             const isi = document.getElementById(`jawab-isi-${pertanyaanId}`).value.trim();
             if (!nama || !isi) return;
-
-            document.getElementById('forum-seq-status').textContent = `submitAnswer(${pertanyaanId}, text) → saveNewAnswer() → displayNewAnswer()`;
 
             try {
                 const res = await fetch(`${API_BASE_URL}/api/forum/jawab`, {
@@ -1204,9 +1401,7 @@
         }
 
         // -------------------------------------------------------------------------
-        // 4. APLIKASI PEMBUAT UML (Sequence: UML Maker Application)
-        //    Mendukung: chooseDiagramType, inputShape, relocateShape (Drag & Drop),
-        //               deleteShape, connectShapes, & requestDownload
+        // 4. APLIKASI PEMBUAT UML
         // -------------------------------------------------------------------------
         let currentUMLType = 'usecase';
         let umlShapes = [];
@@ -1217,20 +1412,20 @@
 
         const SHAPE_OPTIONS_BY_TYPE = {
             usecase: [
-                { value: 'actor', label: '👤 Actor (Stick Man)' },
-                { value: 'usecase', label: '⭕ Use Case (Elips)' },
-                { value: 'boundary', label: '🔲 System Boundary (Kotak Sistem)' }
+                { value: 'actor', label: '👤 Actor (Pengguna)' },
+                { value: 'usecase', label: '⭕ Use Case (Aktivitas Sistem)' },
+                { value: 'boundary', label: '🔲 System Boundary (Batas Sistem)' }
             ],
             sequence: [
-                { value: 'lifeline', label: '🏛️ Lifeline Object (:Object)' },
-                { value: 'actor', label: '👤 Actor Lifeline (User)' },
-                { value: 'note', label: '🗒️ Fragment / Catatan (Opt / Alt / Loop)' }
+                { value: 'lifeline', label: '🏛️ Lifeline Object (Objek Sistem)' },
+                { value: 'actor', label: '👤 Actor Lifeline (Pengguna)' },
+                { value: 'note', label: '🗒️ Catatan / Blok Proses' }
             ],
             activity: [
-                { value: 'start', label: '⚫ Initial Node (Start)' },
-                { value: 'activity', label: '🟦 Activity / Action State' },
-                { value: 'decision', label: '🔶 Decision / Percabangan' },
-                { value: 'end', label: '🎯 Final Node (End)' }
+                { value: 'start', label: '⚫ Titik Mulai (Start)' },
+                { value: 'activity', label: '🟦 Aktivitas / Proses' },
+                { value: 'decision', label: '🔶 Percabangan (Decision)' },
+                { value: 'end', label: '🎯 Titik Selesai (End)' }
             ]
         };
 
@@ -1239,15 +1434,15 @@
                 return {
                     shapes: [
                         { id: 'S1', type: 'boundary', label: 'edu Aps', x: 470, y: 240, w: 560, h: 420 },
-                        { id: 'S2', type: 'actor', label: 'User', x: 85, y: 230 },
+                        { id: 'S2', type: 'actor', label: 'Mahasiswa', x: 85, y: 230 },
                         { id: 'S3', type: 'usecase', label: 'Ruang Belajar', x: 310, y: 90 },
                         { id: 'S4', type: 'usecase', label: 'Ruang Tryout', x: 310, y: 195 },
                         { id: 'S5', type: 'usecase', label: 'Forum Tanya Jawab', x: 310, y: 300 },
-                        { id: 'S6', type: 'usecase', label: 'Aplikasi Pembuat UML', x: 310, y: 400 },
+                        { id: 'S6', type: 'usecase', label: 'Pembuat UML', x: 310, y: 400 },
                         { id: 'S7', type: 'usecase', label: 'Materi 1 s/d 6', x: 610, y: 90 },
-                        { id: 'S8', type: 'usecase', label: 'Hasil Ujian', x: 610, y: 195 },
-                        { id: 'S9', type: 'usecase', label: 'Input & Jawab Pertanyaan', x: 610, y: 300 },
-                        { id: 'S10', type: 'usecase', label: 'Edit & Download UML', x: 610, y: 400 }
+                        { id: 'S8', type: 'usecase', label: 'Hasil Evaluasi', x: 610, y: 195 },
+                        { id: 'S9', type: 'usecase', label: 'Tanya & Jawab Diskusi', x: 610, y: 300 },
+                        { id: 'S10', type: 'usecase', label: 'Edit & Unduh Diagram', x: 610, y: 400 }
                     ],
                     connections: [
                         { id: 'C1', from: 'S2', to: 'S3', rel: 'association', label: '' },
@@ -1263,37 +1458,37 @@
             } else if (type === 'sequence') {
                 return {
                     shapes: [
-                        { id: 'S1', type: 'actor', label: 'User', x: 100, y: 75 },
-                        { id: 'S2', type: 'lifeline', label: ':Interface', x: 290, y: 75 },
-                        { id: 'S3', type: 'lifeline', label: ':Tryout & Grading', x: 500, y: 75 },
-                        { id: 'S4', type: 'lifeline', label: ':Database', x: 700, y: 75 },
-                        { id: 'S5', type: 'note', label: '1: Selects Tryout & Answer Questions', x: 290, y: 185 },
-                        { id: 'S6', type: 'note', label: '8: Submit Answers -> 10: Calculate Score', x: 500, y: 265 },
-                        { id: 'S7', type: 'note', label: '11: Save Test Results -> 15: Hasil Ujian', x: 500, y: 350 }
+                        { id: 'S1', type: 'actor', label: 'Mahasiswa', x: 100, y: 75 },
+                        { id: 'S2', type: 'lifeline', label: 'Halaman Aplikasi', x: 290, y: 75 },
+                        { id: 'S3', type: 'lifeline', label: 'Sistem Evaluasi', x: 500, y: 75 },
+                        { id: 'S4', type: 'lifeline', label: 'Basis Data', x: 700, y: 75 },
+                        { id: 'S5', type: 'note', label: '1. Memilih Kategori & Menjawab Soal', x: 290, y: 185 },
+                        { id: 'S6', type: 'note', label: '2. Menghitung Skor Jawaban', x: 500, y: 265 },
+                        { id: 'S7', type: 'note', label: '3. Menampilkan Nilai & Pembahasan', x: 500, y: 350 }
                     ],
                     connections: [
-                        { id: 'C1', from: 'S1', to: 'S2', rel: 'flow', label: '1: Selects Tryout()' },
-                        { id: 'C2', from: 'S2', to: 'S3', rel: 'flow', label: '2: Request Questions()' },
-                        { id: 'C3', from: 'S3', to: 'S4', rel: 'flow', label: '3: Fetch & Save Results()' },
-                        { id: 'C4', from: 'S6', to: 'S7', rel: 'return', label: '14: Exam Results & Score' }
+                        { id: 'C1', from: 'S1', to: 'S2', rel: 'flow', label: 'Pilih Latihan' },
+                        { id: 'C2', from: 'S2', to: 'S3', rel: 'flow', label: 'Muat Soal' },
+                        { id: 'C3', from: 'S3', to: 'S4', rel: 'flow', label: 'Ambil Data Soal' },
+                        { id: 'C4', from: 'S6', to: 'S7', rel: 'return', label: 'Tampilkan Hasil' }
                     ]
                 };
             } else {
                 // Activity Diagram
                 return {
                     shapes: [
-                        { id: 'S1', type: 'start', label: 'Start', x: 410, y: 55 },
-                        { id: 'S2', type: 'activity', label: 'Pilih Ruang Belajar / Tryout', x: 410, y: 135 },
-                        { id: 'S3', type: 'decision', label: 'Mode?', x: 410, y: 230 },
-                        { id: 'S4', type: 'activity', label: 'Baca Materi 1 - 6', x: 200, y: 320 },
-                        { id: 'S5', type: 'activity', label: 'Kerjakan Tryout & Lihat Hasil Ujian', x: 610, y: 320 },
-                        { id: 'S6', type: 'end', label: 'End', x: 410, y: 425 }
+                        { id: 'S1', type: 'start', label: 'Mulai', x: 410, y: 55 },
+                        { id: 'S2', type: 'activity', label: 'Pilih Menu Pembelajaran', x: 410, y: 135 },
+                        { id: 'S3', type: 'decision', label: 'Menu?', x: 410, y: 230 },
+                        { id: 'S4', type: 'activity', label: 'Pelajari Materi 1 - 6', x: 200, y: 320 },
+                        { id: 'S5', type: 'activity', label: 'Kerjakan Latihan & Lihat Pembahasan', x: 610, y: 320 },
+                        { id: 'S6', type: 'end', label: 'Selesai', x: 410, y: 425 }
                     ],
                     connections: [
                         { id: 'C1', from: 'S1', to: 'S2', rel: 'flow', label: '' },
                         { id: 'C2', from: 'S2', to: 'S3', rel: 'flow', label: '' },
                         { id: 'C3', from: 'S3', to: 'S4', rel: 'flow', label: '[Belajar]' },
-                        { id: 'C4', from: 'S3', to: 'S5', rel: 'flow', label: '[Tryout / UAS]' },
+                        { id: 'C4', from: 'S3', to: 'S5', rel: 'flow', label: '[Tryout]' },
                         { id: 'C5', from: 'S4', to: 'S6', rel: 'flow', label: '' },
                         { id: 'C6', from: 'S5', to: 'S6', rel: 'flow', label: '' }
                     ]
@@ -1324,7 +1519,7 @@
             typeSelect.innerHTML = SHAPE_OPTIONS_BY_TYPE[type].map(o => `<option value="${o.value}">${o.label}</option>`).join('');
 
             loadPresetDiagram();
-            logUMLAction(`chooseDiagramType('${type}') → initializeCanvas('${type}')`);
+            logUMLAction(`Menampilkan kanvas ${titles[type]}. Klik dan geser elemen untuk mengubah posisi.`);
         }
 
         function loadPresetDiagram() {
@@ -1340,7 +1535,7 @@
             umlConnections = [];
             selectedShapeId = null;
             renderUpdatedView();
-            logUMLAction(`initializeCanvas('${currentUMLType}') [Kanvas Dikosongkan]`);
+            logUMLAction("Kanvas telah dibersihkan. Silakan tambahkan elemen baru.");
         }
 
         function handleInputShape() {
@@ -1362,7 +1557,7 @@
             selectedShapeId = newId;
             labelInput.value = '';
             renderUpdatedView();
-            logUMLAction(`inputShape('${type}', '${label}') → updateCanvasData() → showUpdatedDiagram()`);
+            logUMLAction(`Elemen "${label}" berhasil ditambahkan ke kanvas.`);
         }
 
         function handleConnectShapes() {
@@ -1372,7 +1567,7 @@
             const customLabel = document.getElementById('uml-conn-label').value.trim();
 
             if (!fromId || !toId || fromId === toId) {
-                alert("Pilih dua shape yang berbeda untuk dihubungkan.");
+                alert("Pilih dua elemen yang berbeda untuk dihubungkan.");
                 return;
             }
 
@@ -1392,7 +1587,7 @@
 
             document.getElementById('uml-conn-label').value = '';
             renderUpdatedView();
-            logUMLAction(`connectShapes('${fromId}', '${toId}', '${rel}') → renderUpdatedView()`);
+            logUMLAction("Garis penghubung antar elemen berhasil ditambahkan.");
         }
 
         function handleRelocateFromInput() {
@@ -1406,25 +1601,26 @@
             target.y = Math.max(40, Math.min(440, ny));
 
             renderUpdatedView();
-            logUMLAction(`relocateShape('${selectedShapeId}', {x:${target.x}, y:${target.y}}) → showUpdatedDiagram()`);
+            logUMLAction(`Posisi elemen "${target.label}" berhasil dipindahkan.`);
         }
 
         function handleDeleteSelectedShape() {
             if (!selectedShapeId) return;
             const deletedId = selectedShapeId;
+            const deletedObj = umlShapes.find(s => s.id === deletedId);
             umlShapes = umlShapes.filter(s => s.id !== deletedId);
             umlConnections = umlConnections.filter(c => c.from !== deletedId && c.to !== deletedId);
             selectedShapeId = umlShapes.length > 0 ? umlShapes[0].id : null;
 
             renderUpdatedView();
-            logUMLAction(`deleteShape('${deletedId}') → updateCanvasData() → showUpdatedDiagram()`);
+            logUMLAction(`Elemen "${deletedObj ? deletedObj.label : ''}" telah dihapus dari kanvas.`);
         }
 
         function handleDeleteLastConnection() {
             if (umlConnections.length === 0) return;
-            const removed = umlConnections.pop();
+            umlConnections.pop();
             renderUpdatedView();
-            logUMLAction(`deleteConnection('${removed.id}') → renderUpdatedView()`);
+            logUMLAction("Garis penghubung terakhir telah dihapus.");
         }
 
         function onSelectShapeDropdown() {
@@ -1437,8 +1633,8 @@
             const fromDropdown = document.getElementById('uml-conn-from');
             const toDropdown = document.getElementById('uml-conn-to');
 
-            const optionsHTML = umlShapes.map(s => `<option value="${s.id}">[${s.id}] ${escapeHTML(s.label)} (${s.type})</option>`).join('');
-            selDropdown.innerHTML = optionsHTML || '<option value="">(Tidak ada shape)</option>';
+            const optionsHTML = umlShapes.map(s => `<option value="${s.id}">${escapeHTML(s.label)}</option>`).join('');
+            selDropdown.innerHTML = optionsHTML || '<option value="">(Belum ada elemen)</option>';
             fromDropdown.innerHTML = optionsHTML || '<option value="">-</option>';
             toDropdown.innerHTML = optionsHTML || '<option value="">-</option>';
 
@@ -1467,16 +1663,20 @@
             const svg = document.getElementById('uml-interactive-svg');
             if (!svg) return;
 
+            const isDark = document.documentElement.classList.contains('dark');
+            const lineStrokeSolid = isDark ? '#cbd5e1' : '#334155';
+            const lineStrokeDashed = isDark ? '#818cf8' : '#4f46e5';
+
             const defs = `
                 <defs>
                     <marker id="arrow-solid" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
-                        <polygon points="0 0, 10 4, 0 8" fill="#334155"/>
+                        <polygon points="0 0, 10 4, 0 8" fill="${lineStrokeSolid}"/>
                     </marker>
                     <marker id="arrow-open" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
-                        <polyline points="1 1, 9 4, 1 7" fill="none" stroke="#4f46e5" stroke-width="1.8"/>
+                        <polyline points="1 1, 9 4, 1 7" fill="none" stroke="${lineStrokeDashed}" stroke-width="1.8"/>
                     </marker>
                     <marker id="arrow-generalization" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto">
-                        <polygon points="0 1, 11 5, 0 9" fill="#ffffff" stroke="#334155" stroke-width="1.8"/>
+                        <polygon points="0 1, 11 5, 0 9" fill="${isDark ? '#0f172a' : '#ffffff'}" stroke="${lineStrokeSolid}" stroke-width="1.8"/>
                     </marker>
                 </defs>
             `;
@@ -1490,7 +1690,7 @@
             // Lifeline vertical dashed lines for Sequence Diagram
             const lifelineVerticals = foregroundShapes
                 .filter(s => currentUMLType === 'sequence' && (s.type === 'lifeline' || s.type === 'actor'))
-                .map(s => `<line x1="${s.x}" y1="${s.y + 28}" x2="${s.x}" y2="445" stroke="#94a3b8" stroke-width="1.8" stroke-dasharray="6,5"/>`)
+                .map(s => `<line x1="${s.x}" y1="${s.y + 28}" x2="${s.x}" y2="445" stroke="${isDark ? '#64748b' : '#94a3b8'}" stroke-width="1.8" stroke-dasharray="6,5"/>`)
                 .join('');
 
             // Render Connections
@@ -1511,13 +1711,13 @@
                 return `
                     <g>
                         <line x1="${s1.x}" y1="${s1.y}" x2="${s2.x}" y2="${s2.y}"
-                            stroke="${isDashed ? '#4f46e5' : '#334155'}"
+                            stroke="${isDashed ? lineStrokeDashed : lineStrokeSolid}"
                             stroke-width="2"
                             ${isDashed ? 'stroke-dasharray="5,4"' : ''}
                             ${marker ? `marker-end="${marker}"` : ''}/>
                         ${c.label ? `
-                            <rect x="${mx - 48}" y="${my - 18}" width="96" height="16" rx="4" fill="#ffffff" opacity="0.9"/>
-                            <text x="${mx}" y="${my - 7}" text-anchor="middle" font-family="sans-serif" font-size="10" font-weight="bold" fill="#4338ca">${escapeHTML(c.label)}</text>
+                            <rect x="${mx - 48}" y="${my - 18}" width="96" height="16" rx="4" fill="${isDark ? '#1e293b' : '#ffffff'}" opacity="0.92"/>
+                            <text x="${mx}" y="${my - 7}" text-anchor="middle" font-family="sans-serif" font-size="10" font-weight="bold" fill="${isDark ? '#a5b4fc' : '#4338ca'}">${escapeHTML(c.label)}</text>
                         ` : ''}
                     </g>
                 `;
@@ -1529,17 +1729,18 @@
         }
 
         function renderShapeNode(s) {
+            const isDark = document.documentElement.classList.contains('dark');
             const isSelected = s.id === selectedShapeId;
             const selClass = isSelected ? 'uml-node uml-node-selected' : 'uml-node';
-            const strokeColor = isSelected ? '#7c3aed' : '#334155';
+            const strokeColor = isSelected ? '#a855f7' : (isDark ? '#cbd5e1' : '#334155');
 
             if (s.type === 'boundary') {
                 const w = s.w || 420;
                 const h = s.h || 320;
                 return `
                     <g class="${selClass}" data-shape-id="${s.id}" onmousedown="startDragShape(evt, '${s.id}')">
-                        <rect x="${s.x - w/2}" y="${s.y - h/2}" width="${w}" height="${h}" rx="10" fill="#fefce8" fill-opacity="0.7" stroke="${strokeColor}" stroke-width="2"/>
-                        <text x="${s.x + w/2 - 16}" y="${s.y - h/2 + 22}" text-anchor="end" font-family="sans-serif" font-size="13" font-weight="bold" fill="#1e293b">${escapeHTML(s.label)}</text>
+                        <rect x="${s.x - w/2}" y="${s.y - h/2}" width="${w}" height="${h}" rx="10" fill="${isDark ? '#1e293b' : '#fefce8'}" fill-opacity="0.72" stroke="${strokeColor}" stroke-width="2"/>
+                        <text x="${s.x + w/2 - 16}" y="${s.y - h/2 + 22}" text-anchor="end" font-family="sans-serif" font-size="13" font-weight="bold" fill="${isDark ? '#f8fafc' : '#1e293b'}">${escapeHTML(s.label)}</text>
                     </g>
                 `;
             }
@@ -1552,7 +1753,7 @@
                         <line x1="${s.x - 18}" y1="${s.y}" x2="${s.x + 18}" y2="${s.y}" stroke="${strokeColor}" stroke-width="2.2"/>
                         <line x1="${s.x}" y1="${s.y + 18}" x2="${s.x - 14}" y2="${s.y + 40}" stroke="${strokeColor}" stroke-width="2.2"/>
                         <line x1="${s.x}" y1="${s.y + 18}" x2="${s.x + 14}" y2="${s.y + 40}" stroke="${strokeColor}" stroke-width="2.2"/>
-                        <text x="${s.x}" y="${s.y + 56}" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="bold" fill="#0f172a">${escapeHTML(s.label)}</text>
+                        <text x="${s.x}" y="${s.y + 56}" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="bold" fill="${isDark ? '#f1f5f9' : '#0f172a'}">${escapeHTML(s.label)}</text>
                     </g>
                 `;
             }
@@ -1560,8 +1761,8 @@
             if (s.type === 'usecase') {
                 return `
                     <g class="${selClass}" data-shape-id="${s.id}" onmousedown="startDragShape(evt, '${s.id}')">
-                        <ellipse cx="${s.x}" cy="${s.y}" rx="82" ry="26" fill="#e0f2fe" stroke="${isSelected ? '#7c3aed' : '#0284c7'}" stroke-width="2"/>
-                        <text x="${s.x}" y="${s.y + 4}" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="bold" fill="#0f172a">${escapeHTML(s.label)}</text>
+                        <ellipse cx="${s.x}" cy="${s.y}" rx="82" ry="26" fill="${isDark ? '#0c4a6e' : '#e0f2fe'}" stroke="${isSelected ? '#a855f7' : '#38bdf8'}" stroke-width="2"/>
+                        <text x="${s.x}" y="${s.y + 4}" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="bold" fill="${isDark ? '#f0f9ff' : '#0f172a'}">${escapeHTML(s.label)}</text>
                     </g>
                 `;
             }
@@ -1569,8 +1770,8 @@
             if (s.type === 'lifeline') {
                 return `
                     <g class="${selClass}" data-shape-id="${s.id}" onmousedown="startDragShape(evt, '${s.id}')">
-                        <rect x="${s.x - 65}" y="${s.y - 20}" width="130" height="40" rx="6" fill="#dbeafe" stroke="${isSelected ? '#7c3aed' : '#1d4ed8'}" stroke-width="2"/>
-                        <text x="${s.x}" y="${s.y + 4}" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="bold" fill="#1e3a8a" text-decoration="underline">${escapeHTML(s.label)}</text>
+                        <rect x="${s.x - 65}" y="${s.y - 20}" width="130" height="40" rx="6" fill="${isDark ? '#1e3a8a' : '#dbeafe'}" stroke="${isSelected ? '#a855f7' : '#3b82f6'}" stroke-width="2"/>
+                        <text x="${s.x}" y="${s.y + 4}" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="bold" fill="${isDark ? '#eff6ff' : '#1e3a8a'}" text-decoration="underline">${escapeHTML(s.label)}</text>
                     </g>
                 `;
             }
@@ -1578,8 +1779,8 @@
             if (s.type === 'note') {
                 return `
                     <g class="${selClass}" data-shape-id="${s.id}" onmousedown="startDragShape(evt, '${s.id}')">
-                        <rect x="${s.x - 110}" y="${s.y - 18}" width="220" height="36" rx="6" fill="#f3e8ff" stroke="${isSelected ? '#7c3aed' : '#9333ea'}" stroke-width="1.8"/>
-                        <text x="${s.x}" y="${s.y + 4}" text-anchor="middle" font-family="sans-serif" font-size="10.5" font-weight="bold" fill="#581c87">${escapeHTML(s.label)}</text>
+                        <rect x="${s.x - 110}" y="${s.y - 18}" width="220" height="36" rx="6" fill="${isDark ? '#3b0764' : '#f3e8ff'}" stroke="${isSelected ? '#facc15' : '#a855f7'}" stroke-width="1.8"/>
+                        <text x="${s.x}" y="${s.y + 4}" text-anchor="middle" font-family="sans-serif" font-size="10.5" font-weight="bold" fill="${isDark ? '#f3e8ff' : '#581c87'}">${escapeHTML(s.label)}</text>
                     </g>
                 `;
             }
@@ -1587,8 +1788,8 @@
             if (s.type === 'start') {
                 return `
                     <g class="${selClass}" data-shape-id="${s.id}" onmousedown="startDragShape(evt, '${s.id}')">
-                        <circle cx="${s.x}" cy="${s.y}" r="14" fill="#0f172a" stroke="${strokeColor}" stroke-width="2"/>
-                        <text x="${s.x}" y="${s.y - 20}" text-anchor="middle" font-family="sans-serif" font-size="10" font-weight="bold" fill="#334155">${escapeHTML(s.label)}</text>
+                        <circle cx="${s.x}" cy="${s.y}" r="14" fill="${isDark ? '#facc15' : '#0f172a'}" stroke="${strokeColor}" stroke-width="2"/>
+                        <text x="${s.x}" y="${s.y - 20}" text-anchor="middle" font-family="sans-serif" font-size="10" font-weight="bold" fill="${isDark ? '#e2e8f0' : '#334155'}">${escapeHTML(s.label)}</text>
                     </g>
                 `;
             }
@@ -1596,9 +1797,9 @@
             if (s.type === 'end') {
                 return `
                     <g class="${selClass}" data-shape-id="${s.id}" onmousedown="startDragShape(evt, '${s.id}')">
-                        <circle cx="${s.x}" cy="${s.y}" r="16" fill="#ffffff" stroke="#0f172a" stroke-width="2.2"/>
-                        <circle cx="${s.x}" cy="${s.y}" r="10" fill="#0f172a"/>
-                        <text x="${s.x}" y="${s.y + 30}" text-anchor="middle" font-family="sans-serif" font-size="10" font-weight="bold" fill="#334155">${escapeHTML(s.label)}</text>
+                        <circle cx="${s.x}" cy="${s.y}" r="16" fill="${isDark ? '#1e293b' : '#ffffff'}" stroke="${isDark ? '#facc15' : '#0f172a'}" stroke-width="2.2"/>
+                        <circle cx="${s.x}" cy="${s.y}" r="10" fill="${isDark ? '#facc15' : '#0f172a'}"/>
+                        <text x="${s.x}" y="${s.y + 30}" text-anchor="middle" font-family="sans-serif" font-size="10" font-weight="bold" fill="${isDark ? '#e2e8f0' : '#334155'}">${escapeHTML(s.label)}</text>
                     </g>
                 `;
             }
@@ -1606,8 +1807,8 @@
             if (s.type === 'decision') {
                 return `
                     <g class="${selClass}" data-shape-id="${s.id}" onmousedown="startDragShape(evt, '${s.id}')">
-                        <polygon points="${s.x},${s.y - 28} ${s.x + 45},${s.y} ${s.x},${s.y + 28} ${s.x - 45},${s.y}" fill="#fef08a" stroke="${isSelected ? '#7c3aed' : '#ca8a04'}" stroke-width="2"/>
-                        <text x="${s.x}" y="${s.y + 4}" text-anchor="middle" font-family="sans-serif" font-size="10" font-weight="bold" fill="#713f12">${escapeHTML(s.label)}</text>
+                        <polygon points="${s.x},${s.y - 28} ${s.x + 45},${s.y} ${s.x},${s.y + 28} ${s.x - 45},${s.y}" fill="${isDark ? '#713f12' : '#fef08a'}" stroke="${isSelected ? '#a855f7' : '#eab308'}" stroke-width="2"/>
+                        <text x="${s.x}" y="${s.y + 4}" text-anchor="middle" font-family="sans-serif" font-size="10" font-weight="bold" fill="${isDark ? '#fef9c3' : '#713f12'}">${escapeHTML(s.label)}</text>
                     </g>
                 `;
             }
@@ -1615,8 +1816,8 @@
             // Default: activity box
             return `
                 <g class="${selClass}" data-shape-id="${s.id}" onmousedown="startDragShape(evt, '${s.id}')">
-                    <rect x="${s.x - 95}" y="${s.y - 22}" width="190" height="44" rx="16" fill="#dcfce7" stroke="${isSelected ? '#7c3aed' : '#16a34a'}" stroke-width="2"/>
-                    <text x="${s.x}" y="${s.y + 4}" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="bold" fill="#14532d">${escapeHTML(s.label)}</text>
+                    <rect x="${s.x - 95}" y="${s.y - 22}" width="190" height="44" rx="16" fill="${isDark ? '#064e3b' : '#dcfce7'}" stroke="${isSelected ? '#a855f7' : '#10b981'}" stroke-width="2"/>
+                    <text x="${s.x}" y="${s.y + 4}" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="bold" fill="${isDark ? '#ecfdf5' : '#14532d'}">${escapeHTML(s.label)}</text>
                 </g>
             `;
         }
@@ -1658,7 +1859,7 @@
             if (draggingShapeId) {
                 const moved = umlShapes.find(s => s.id === draggingShapeId);
                 if (moved) {
-                    logUMLAction(`relocateShape('${moved.id}', {x:${moved.x}, y:${moved.y}}) → showUpdatedDiagram()`);
+                    logUMLAction(`Posisi elemen "${moved.label}" telah diperbarui.`);
                 }
                 draggingShapeId = null;
             }
@@ -1669,7 +1870,6 @@
             if (el) el.textContent = msg;
         }
 
-        // requestDownload(format) -> generateFile -> saveFile -> triggerFileDownload
         async function requestDownload() {
             const format = document.getElementById('uml-download-format').value;
             const svgEl = document.getElementById('uml-interactive-svg');
@@ -1681,7 +1881,7 @@
             clonedSvg.setAttribute("height", "480");
             const svgString = new XMLSerializer().serializeToString(clonedSvg);
 
-            logUMLAction(`requestDownload('${format}') → generateFile() → saveFile(FileStorage) → triggerFileDownload()`);
+            logUMLAction(`Mengunduh diagram dalam format .${format.toUpperCase()}...`);
 
             // Simpan ke File Storage Backend (jika aktif)
             try {
@@ -1712,7 +1912,7 @@
                     canvas.width = 1640;
                     canvas.height = 960;
                     const ctx = canvas.getContext('2d');
-                    ctx.fillStyle = '#f8fafc';
+                    ctx.fillStyle = document.documentElement.classList.contains('dark') ? '#0b1120' : '#f8fafc';
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                     URL.revokeObjectURL(url);
@@ -1733,6 +1933,155 @@
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
+        }
+
+        // -------------------------------------------------------------------------
+        // 5. FITUR MODE GELAP / TERANG & BACKGROUND GRAFIS ABSTRAK INTERAKTIF
+        // -------------------------------------------------------------------------
+        function toggleDarkMode() {
+            const htmlEl = document.documentElement;
+            const isNowDark = htmlEl.classList.toggle('dark');
+            localStorage.setItem('eduaps_theme', isNowDark ? 'dark' : 'light');
+            syncThemeUI();
+            renderUpdatedView();
+        }
+
+        function syncThemeUI() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const iconEl = document.getElementById('theme-toggle-icon');
+            const textEl = document.getElementById('theme-toggle-text');
+            if (iconEl) iconEl.textContent = isDark ? '☀️' : '🌙';
+            if (textEl) textEl.textContent = isDark ? 'Mode Terang' : 'Mode Gelap';
+        }
+
+        function initInteractiveAbstractBg() {
+            const shapes = Array.from(document.querySelectorAll('.abstract-shape'));
+            if (shapes.length === 0) return;
+
+            let mouseX = -9999;
+            let mouseY = -9999;
+
+            window.addEventListener('mousemove', evt => {
+                mouseX = evt.clientX;
+                mouseY = evt.clientY;
+            });
+
+            window.addEventListener('mouseleave', () => {
+                mouseX = -9999;
+                mouseY = -9999;
+            });
+
+            // Konfigurasi lintasan orbit looping mengelilingi website untuk setiap shape
+            const total = shapes.length;
+            const orbitStates = shapes.map((shape, idx) => {
+                // Bagi ke 3 jalur looping:
+                // 0: Orbit keliling tepi luar website (searah jarum jam)
+                // 1: Orbit elips menengah (berlawanan jarum jam)
+                // 2: Lintasan Figure-8 / Infinity menyilang layar
+                const trackType = idx % 3;
+                const phase = (idx / total) * Math.PI * 2;
+                const dir = idx % 2 === 0 ? 1 : -1;
+
+                const state = {
+                    el: shape,
+                    trackType,
+                    angle: phase,
+                    // Kecepatan orbit sangat kalem (berbasis detik: ~85 - 115 detik per 1 putaran penuh)
+                    orbitSpeed: (0.055 + (idx % 5) * 0.008) * (trackType === 1 ? -1 : 1),
+                    spinAngle: idx * 28,
+                    // Kecepatan putar poros kalem (~6 - 11 derajat per detik)
+                    spinSpeed: (6.0 + (idx % 4) * 1.6) * dir,
+                    scale: 1,
+                    isClicked: false
+                };
+
+                shape.addEventListener('click', () => {
+                    state.isClicked = true;
+                    shape.classList.add('is-clicked');
+                    setTimeout(() => {
+                        state.isClicked = false;
+                        shape.classList.remove('is-clicked');
+                    }, 450);
+                });
+
+                return state;
+            });
+
+            let lastTime = performance.now();
+
+            function animateOrbitLoop(now) {
+                const dt = Math.min(0.05, Math.max(0.001, (now - lastTime) / 1000));
+                lastTime = now;
+
+                const vw = window.innerWidth || 1280;
+                const vh = window.innerHeight || 800;
+                const centerX = vw / 2;
+                const centerY = vh / 2;
+
+                orbitStates.forEach((st) => {
+                    const shape = st.el;
+                    const w = shape.offsetWidth || 120;
+                    const h = shape.offsetHeight || 120;
+
+                    // Hitung koordinat (x, y) pada lintasan looping memutari website
+                    let x = centerX;
+                    let y = centerY;
+
+                    if (st.trackType === 0) {
+                        // Jalur 1: Orbit keliling luar memutari pinggiran website (rounded perimeter orbit)
+                        const rx = vw * 0.45;
+                        const ry = vh * 0.43;
+                        const cosA = Math.cos(st.angle);
+                        const sinA = Math.sin(st.angle);
+                        // Sedikit squircle agar menyusuri sudut-sudut halaman dengan rapi
+                        x = centerX + Math.sign(cosA) * Math.pow(Math.abs(cosA), 0.78) * rx;
+                        y = centerY + Math.sign(sinA) * Math.pow(Math.abs(sinA), 0.78) * ry;
+                    } else if (st.trackType === 1) {
+                        // Jalur 2: Orbit elips memutari area tengah-luar website (berlawanan arah)
+                        const rx = vw * 0.36;
+                        const ry = vh * 0.35;
+                        x = centerX + Math.cos(st.angle) * rx;
+                        y = centerY + Math.sin(st.angle) * ry;
+                    } else {
+                        // Jalur 3: Looping Infinity / Figure-8 (Lissajous) mengelilingi layar
+                        const rx = vw * 0.41;
+                        const ry = vh * 0.38;
+                        x = centerX + Math.sin(st.angle) * rx;
+                        y = centerY + Math.sin(st.angle * 2) * ry;
+                    }
+
+                    // Deteksi apakah kursor sedang berada di atas / dekat bentuk abstrak ini
+                    const hitRadius = Math.max(w, h) * 0.58 + 18;
+                    const dist = Math.hypot(mouseX - x, mouseY - y);
+                    const isHovered = dist <= hitRadius;
+
+                    if (isHovered) {
+                        shape.classList.add('is-hovered');
+                    } else {
+                        shape.classList.remove('is-hovered');
+                    }
+
+                    // Saat di-hover: hampir berhenti di tempat (0.15x) agar nyaman dilihat,
+                    // sambil membesar (scale 1.62x) & menjadi gelap
+                    const speedMultiplier = isHovered ? 0.15 : 1;
+                    st.angle += st.orbitSpeed * speedMultiplier * dt;
+                    st.spinAngle += st.spinSpeed * (isHovered ? 1.8 : 1) * dt;
+
+                    const targetScale = st.isClicked ? 1.92 : (isHovered ? 1.62 : 1.0);
+                    const lerpFactor = 1 - Math.pow(0.001, dt);
+                    st.scale += (targetScale - st.scale) * lerpFactor;
+
+                    const drawX = x - w / 2;
+                    const drawY = y - h / 2;
+
+                    shape.style.setProperty('--counter-rot', `${(-st.spinAngle).toFixed(1)}deg`);
+                    shape.style.transform = `translate3d(${drawX.toFixed(1)}px, ${drawY.toFixed(1)}px, 0) rotate(${st.spinAngle.toFixed(1)}deg) scale(${st.scale.toFixed(3)})`;
+                });
+
+                requestAnimationFrame(animateOrbitLoop);
+            }
+
+            requestAnimationFrame(animateOrbitLoop);
         }
 
         // -------------------------------------------------------------------------
@@ -1758,6 +2107,8 @@
 
         // Inisialisasi saat aplikasi dibuka
         window.addEventListener('DOMContentLoaded', () => {
+            syncThemeUI();
+            initInteractiveAbstractBg();
             openRuangBelajar();
             chooseDiagramType('usecase');
         });
